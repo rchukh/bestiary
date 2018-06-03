@@ -1,0 +1,27 @@
+{
+  "provisioners" : [
+    {
+      "type": "shell",
+      "scripts": [
+        "mutation/base.sh",
+        "mutation/commons/kernel.sh",
+        "mutation/observers/prometheus/node_exporter.sh"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "googlecompute",
+      "account_file": "account.json",
+      "project_id": "bestiary",
+      "source_image_family": "centos-7",
+      "ssh_username": "packer",
+      "zone": "europe-west1-d",
+      "use_internal_ip": true,
+
+      "image_name" : "bestiary-linux-{{timestamp}}",
+      "image_family" : "bestiary-linux",
+      "image_description" : "Bestiary Build - {{timestamp}}"
+    }
+  ]
+}

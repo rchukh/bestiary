@@ -6,7 +6,13 @@
 # Mutation required:
 # - base.sh
 ##
-sudo yum --enablerepo=elrepo-kernel install kernel-ml
+sudo yum -y --enablerepo=elrepo-kernel install kernel-ml
+sudo yum -y --enablerepo=elrepo-kernel swap kernel-headers -- kernel-ml-headers
+sudo yum -y --enablerepo=elrepo-kernel swap kernel-tools-libs -- kernel-ml-tools-libs
+sudo yum -y --enablerepo=elrepo-kernel install kernel-ml-tools
+sudo yum -y --enablerepo=elrepo-kernel swap kernel-devel -- kernel-ml-devel
+sudo yum -y remove kernel
+
 sudo grub2-set-default 0
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 

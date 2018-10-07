@@ -3,7 +3,10 @@
 sudo rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
 sudo rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
 sudo yum upgrade -y
-sudo yum install mc wget uuidgen -y
+# Handy tools
+# - util-linux for uuidgen
+# - net-tools for netstat
+sudo yum -y install mc wget util-linux net-tools
 
 # User file limits
 sudo cp /etc/security/limits.conf /etc/security/limits.conf.bak

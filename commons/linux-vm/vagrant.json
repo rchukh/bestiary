@@ -1,0 +1,24 @@
+{
+  "provisioners" : [
+    {
+      "type": "shell",
+      "scripts": [
+        "mutation/base.sh",
+        "mutation/commons/kernel.sh",
+        "mutation/observers/prometheus/node_exporter.sh"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "virtualbox-ovf",
+      "source_path": "file:///tmp/ovf/centos7/centos7.ovf",
+      "ssh_username": "vagrant",
+      "ssh_private_key_file": "C:/Workspace/VM/bestiary/.vagrant/machines/default/virtualbox/private_key",
+      "ssh_port": "22",
+      "shutdown_command": "echo 'packer' | sudo -S shutdown -P now",
+      "vm_name" : "bestiary-v-centos7-{{timestamp}}"
+    }
+  ],
+  "post-processors": ["vagrant"]
+}

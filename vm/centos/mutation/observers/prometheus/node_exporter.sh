@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ##
 # Installs Prometheus Node Exporter - https://github.com/prometheus/node_exporter/
 #
@@ -7,7 +7,7 @@
 ##
 TMP_DIR=/tmp/$(uuidgen -t)
 
-NODE_EXPORTER_VERSION=0.16.0
+NODE_EXPORTER_VERSION=0.17.0
 NODE_EXPORTER_DIST=node_exporter-$NODE_EXPORTER_VERSION.linux-amd64.tar.gz
 
 # Download and unpack node_exporter

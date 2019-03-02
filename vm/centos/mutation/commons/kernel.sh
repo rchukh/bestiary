@@ -1,7 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 ##
-# Updates to latest "mainline stable" Kernel (http://elrepo.org/tiki/kernel-ml).
-# Enables Google BBR.
+# Updates to the latest "mainline stable" Kernel (http://elrepo.org/tiki/kernel-ml).
+# Enables Google BBR:
+# - https://queue.acm.org/detail.cfm?id=3022184
+# - https://medium.com/google-cloud/tcp-bbr-magic-dust-for-network-performance-57a5f1ccf437
 #
 # Mutation required:
 # - base.sh

@@ -5,7 +5,9 @@
       "scripts": [
         "mutation/base.sh",
         "mutation/commons/kernel.sh",
-        "mutation/observers/prometheus/node_exporter.sh"
+        "mutation/commons/monit.sh",
+        "mutation/observers/prometheus/node_exporter.sh",
+        "mutation/runtimes/java/corretto_8.sh"
       ]
     }
   ],
@@ -19,9 +21,9 @@
       "zone": "europe-west1-d",
       "use_internal_ip": true,
 
-      "image_name" : "bestiary-linux-{{timestamp}}",
+      "image_name" : "bestiary-centos7-{{timestamp}}",
       "image_family" : "bestiary-linux",
-      "image_description" : "Bestiary Build - {{timestamp}}"
+      "image_description" : "Bestiary CentOS 7 - Build {{timestamp}}"
     }
   ]
 }

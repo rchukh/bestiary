@@ -1,0 +1,29 @@
+{
+  "provisioners" : [
+    {
+      "type": "shell",
+      "scripts": [
+        "../../../vm/centos/mutation/base.sh",
+        "../../../vm/centos/mutation/commons/kernel.sh",
+        "../../../vm/centos/mutation/commons/monit.sh",
+        "../../../vm/centos/mutation/observers/prometheus/node_exporter.sh",
+        "../../../vm/centos/mutation/runtimes/java/corretto_8.sh",
+        "mutation/presto.sh",
+        "mutation/presto/jmx_agent.sh",
+        "mutation/presto/monit.sh"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "virtualbox-ovf",
+      "source_path": "file:///tmp/ovf/centos7/centos7.ovf",
+      "ssh_username": "vagrant",
+      "ssh_private_key_file": "C:/Workspace/VM/bestiary/.vagrant/machines/default/virtualbox/private_key",
+      "ssh_port": "22",
+      "shutdown_command": "echo 'packer' | sudo -S shutdown -P now",
+      "vm_name" : "bestiary-prestosql-{{timestamp}}"
+    }
+  ],
+  "post-processors": ["vagrant"]
+}

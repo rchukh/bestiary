@@ -7,4 +7,5 @@
 .classpath
 .settings
 .project
+.terraform
 account.json

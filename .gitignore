@@ -2,10 +2,11 @@
 *.iml
 *.ipr
 *.iws
-.idea
 .DS_Store
 .classpath
 .settings
 .project
 .terraform
 account.json
+*.tfstate
+*.backup

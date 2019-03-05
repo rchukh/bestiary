@@ -1,6 +1,5 @@
 variable "project" {
   description = "The GCP project to use."
-  default     = "bestiary-218008"
 }
 
 variable "region" {
@@ -8,29 +7,21 @@ variable "region" {
   default     = "europe-west1"
 }
 
-variable "network_name" {
-  description = "The GCP Network Name"
-  default     = "bestiary-vpc"
-}
-
-variable "subnetwork_name" {
-  description = "The GCP Subnetwork Name"
-  default     = "bestiary-default"
-}
-
-variable "subnetwork_ip_cidr_range" {
-  description = "The GCP Subnetwork CIDR"
-  default     = "10.0.0.0/16"
-}
-
 variable "zone" {
   description = "The GCP region zone to use."
   default     = "europe-west1-d"
 }
 
+variable "network" {
+  description = "The GCP Network"
+}
+
+variable "subnetwork" {
+  description = "The GCP Subnetwork"
+}
+
 variable "environment_name" {
   description = "PrestoSQL Environment Name (used in WEB UI)"
-  default     = "bestiary"
 }
 
 variable "coordinator_group_name" {
@@ -66,14 +57,14 @@ variable "coordinator_startup_script" {
   default     = ""
 }
 
-variable "workers" {
-  description = "Amount of workers."
-  default     = "1"
-}
-
 variable "worker_group_name" {
   description = "Worker Instance Group Name"
   default     = "prestosql-worker-group"
+}
+
+variable "worker_group_size" {
+  description = "Amount of workers."
+  default     = "1"
 }
 
 variable "worker_image" {

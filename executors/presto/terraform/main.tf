@@ -15,17 +15,6 @@ provider "google" {
   zone    = "${var.zone}"
 }
 
-resource "google_compute_network" "prestosql" {
-  name                    = "${var.network_name}"
-  auto_create_subnetworks = "false"
-}
-
-resource "google_compute_subnetwork" "prestosql" {
-  name          = "${var.subnetwork_name}"
-  network       = "${google_compute_network.prestosql.self_link}"
-  ip_cidr_range = "${var.subnetwork_ip_cidr_range}"
-}
-
 data "template_file" "coordinator-startup-script" {
   template = "${file("${format("%s/templates/startup.sh.tpl", path.module)}")}"
 
@@ -42,7 +31,7 @@ module "coordinator_lb" {
   version      = "1.0.3"
   region       = "${var.region}"
   name         = "${var.coordinator_group_lb_name}"
-  network      = "${google_compute_network.prestosql.self_link}"
+  network      = "${var.network}"
   service_port = "${module.coordinator_group.service_port}"
   target_tags  = ["${module.coordinator_group.target_tags}"]
 }
@@ -58,8 +47,8 @@ module "coordinator_group" {
 
   region     = "${var.region}"
   zone       = "${var.zone}"
-  network    = "${google_compute_network.prestosql.self_link}"
-  subnetwork = "${google_compute_subnetwork.prestosql.self_link}"
+  network    = "${var.network}"
+  subnetwork = "${var.subnetwork}"
 
   compute_image = "${var.coordinator_image}"
   machine_type  = "${var.coordinator_type}"
@@ -90,14 +79,14 @@ data "template_file" "worker-startup-script" {
 module "worker_group" {
   source  = "GoogleCloudPlatform/managed-instance-group/google"
   version = "1.1.15"
-  
-  name    = "${var.worker_group_name}"
-  size    = "${var.workers}"
+
+  name = "${var.worker_group_name}"
+  size = "${var.worker_group_size}"
 
   region     = "${var.region}"
   zone       = "${var.zone}"
-  network    = "${google_compute_network.prestosql.self_link}"
-  subnetwork = "${google_compute_subnetwork.prestosql.self_link}"
+  network    = "${var.network}"
+  subnetwork = "${var.subnetwork}"
 
   compute_image = "${var.worker_image}"
   machine_type  = "${var.worker_type}"
@@ -111,10 +100,10 @@ module "worker_group" {
   # https://www.hashicorp.com/blog/terraform-0-12-conditional-operator-improvements
   # service_account_scopes = "${var.service_account_scopes}"
 
-  service_port      = 8080
-  service_port_name = "http"
-  http_health_check = false
-  target_pools      = []
-  target_tags       = ["allow-prestosql-worker"]
+  service_port       = 8080
+  service_port_name  = "http"
+  http_health_check  = false
+  target_pools       = []
+  target_tags        = ["allow-prestosql-worker"]
   wait_for_instances = true
 }

@@ -24,6 +24,11 @@ variable "environment_name" {
   description = "PrestoSQL Environment Name (used in WEB UI)"
 }
 
+variable "http_port" {
+  description = "Presto HTTP Port. Presto uses HTTP for all communication, internal and external."
+  default     = "8080"
+}
+
 variable "coordinator_group_name" {
   description = "Coordinator Instance Group Name"
   default     = "prestosql-coordinator-group"
@@ -50,6 +55,11 @@ variable "coordinator_disk_type" {
   # local-ssd not available on boot node
   # pd-ssd a bit pricey
   default = "pd-standard"
+}
+
+variable "coordinator_config" {
+  description = "Coordinator config.properties override"
+  default     = ""
 }
 
 variable "coordinator_startup_script" {
@@ -83,6 +93,11 @@ variable "worker_disk_type" {
   # local-ssd not available on boot node
   # pd-ssd a bit pricey (not needed until "spill to disk" is non-experimental)
   default = "pd-standard"
+}
+
+variable "worker_config" {
+  description = "Worker config.properties override"
+  default     = ""
 }
 
 variable "worker_startup_script" {

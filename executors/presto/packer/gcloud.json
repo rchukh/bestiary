@@ -18,14 +18,14 @@
       {
         "type": "googlecompute",
         "account_file": "account.json",
-        "project_id": "bestiary",
+        "project_id": "bestiary-218008",
         "source_image_family": "centos-7",
         "ssh_username": "packer",
         "zone": "europe-west1-d",
-        "use_internal_ip": true,
+        "use_internal_ip": false,
 
         "image_name" : "bestiary-prestosql-{{timestamp}}",
-        "image_family" : "bestiary-linux",
+        "image_family" : "bestiary-executors",
         "image_description" : "Bestiary PrestoSQL - Build {{timestamp}}"
       }
     ]

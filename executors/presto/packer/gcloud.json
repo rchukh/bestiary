@@ -1,5 +1,10 @@
 {
-    "provisioners" : [
+    "variables": {
+      "gcp_account_file": "{{env `GOOGLE_CLOUD_KEYFILE_JSON`}}",
+      "gcp_project_id": "",
+      "gcp_zone": "europe-west1-d"
+    },
+    "provisioners": [
       {
         "type": "shell",
         "scripts": [
@@ -17,15 +22,16 @@
     "builders": [
       {
         "type": "googlecompute",
-        "account_file": "account.json",
-        "project_id": "bestiary",
-        "source_image_family": "centos-7",
+        "account_file": "{{user `gcp_account_file`}}",
+        "project_id": "{{user `gcp_project_id`}}",
+        "zone": "{{user `gcp_zone`}}",
+        "use_internal_ip": false,
         "ssh_username": "packer",
-        "zone": "europe-west1-d",
-        "use_internal_ip": true,
+
+        "source_image_family": "centos-7",
 
         "image_name" : "bestiary-prestosql-{{timestamp}}",
-        "image_family" : "bestiary-linux",
+        "image_family" : "bestiary-executors",
         "image_description" : "Bestiary PrestoSQL - Build {{timestamp}}"
       }
     ]

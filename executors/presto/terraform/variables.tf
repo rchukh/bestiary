@@ -20,6 +20,10 @@ variable "subnetwork" {
   description = "The GCP Subnetwork"
 }
 
+variable "subnetwork_range" {
+  description = "Presto Cluster Subnetwork Range (to allow coordinator<->worker communications)"
+}
+
 variable "environment_name" {
   description = "PrestoSQL Environment Name (used in WEB UI)"
 }
@@ -31,22 +35,27 @@ variable "http_port" {
 
 variable "coordinator_group_name" {
   description = "Coordinator Instance Group Name"
-  default     = "prestosql-coordinator-group"
+  default     = ""
 }
 
 variable "coordinator_group_lb_name" {
   description = "Coordinator Instance Group Load Balancer Name"
-  default     = "prestosql-coordinator-lb"
+  default     = ""
+}
+
+variable "coordinator_group_lb_schema" {
+  description = "Coordinator Instance Group Load Balancing schema (EXTERNAL, INTERNAL)"
+  default     = "EXTERNAL"
 }
 
 variable "coordinator_image" {
   description = "PrestoSQL Image to use for coordinator"
-  default     = "centos-cloud/centos-7"
+  default     = "bestiary-prestosql-1552046971"
 }
 
 variable "coordinator_type" {
   description = "Coordinator Instance type"
-  default     = "f1-micro"
+  default     = "n1-standard-4"
 }
 
 variable "coordinator_disk_type" {
@@ -69,7 +78,7 @@ variable "coordinator_startup_script" {
 
 variable "worker_group_name" {
   description = "Worker Instance Group Name"
-  default     = "prestosql-worker-group"
+  default     = ""
 }
 
 variable "worker_group_size" {
@@ -79,12 +88,12 @@ variable "worker_group_size" {
 
 variable "worker_image" {
   description = "PrestoSQL Image to use for worker"
-  default     = "centos-cloud/centos-7"
+  default     = "bestiary-prestosql-1552046971"
 }
 
 variable "worker_type" {
   description = "Worker Instance type"
-  default     = "f1-micro"
+  default     = "n1-standard-4"
 }
 
 variable "worker_disk_type" {

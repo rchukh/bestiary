@@ -16,7 +16,7 @@ Packer configuration of [PrestoSQL](https://prestosql.io).
 
 ## Variables
 
-| Tables           | Required | Description                      |                                          Default |
+| Variable         | Required | Description                      |                                          Default |
 | ---------------- | :------: | -------------------------------- | -----------------------------------------------: |
 | gcp_account_file |   yes    | Path to GCP Service Account file | `GOOGLE_CLOUD_KEYFILE_JSON` environment variable |
 | gcp_project_id   |   yes    | GCP Project Id                   |                                                  |

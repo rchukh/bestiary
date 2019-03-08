@@ -13,6 +13,68 @@ provider "google" {
   zone    = "${var.zone}"
 }
 
+resource "google_compute_http_health_check" "prestosql" {
+  name = "${var.coordinator_group_lb_name != ""
+                   ? var.coordinator_group_lb_name
+                   : "${var.environment_name}-lb"}"
+
+  project      = "${var.project}"
+  port         = "${var.http_port}"
+  request_path = "/v1/status"
+}
+
+resource "google_compute_target_pool" "prestosql" {
+  name = "${var.environment_name}-pool"
+
+  project          = "${var.project}"
+  region           = "${var.region}"
+  session_affinity = "NONE"
+  health_checks    = ["${google_compute_http_health_check.prestosql.name}"]
+}
+
+resource "google_compute_forwarding_rule" "prestosql" {
+  name = "${var.environment_name}-fr"
+
+  project               = "${var.project}"
+  target                = "${google_compute_target_pool.prestosql.self_link}"
+  load_balancing_scheme = "${var.coordinator_group_lb_schema}"
+  port_range            = "${var.http_port}"
+}
+
+# TODO: Set source_ranges to internal network in case of Internal LB 
+resource "google_compute_firewall" "prestosql-lb-fw" {
+  name = "presto-${var.environment_name}-fr"
+
+  project = "${var.project}"
+  network = "${var.network}"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["${module.coordinator_group.service_port}"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["allow-presto-${var.environment_name}-coordinator"]
+}
+
+# Allow communications between coordinator and workers
+resource "google_compute_firewall" "prestosql" {
+  project = "${var.project}"
+  network = "${var.network}"
+
+  name = "${var.worker_group_name != ""
+          ? var.worker_group_name
+          : "${var.environment_name}-communications"}"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["${var.http_port}"]
+  }
+
+  source_ranges = ["${var.subnetwork_range}"]
+  target_tags   = ["allow-presto-${var.environment_name}"]
+}
+
 data "template_file" "coordinator_config" {
   template = "${file("${format("%s/templates/coordinator.config.tpl", path.module)}")}"
 
@@ -35,45 +97,13 @@ data "template_file" "coordinator-startup-script" {
   }
 }
 
-module "coordinator_lb" {
-  source       = "GoogleCloudPlatform/lb/google"
-  version      = "1.0.3"
-  region       = "${var.region}"
-  name         = "${var.coordinator_group_lb_name}"
-  network      = "${var.network}"
-  service_port = "${module.coordinator_group.service_port}"
-  target_tags  = ["${module.coordinator_group.target_tags}"]
-}
-
-# NOTE: Just for tmp reference. There is no need for global HTTP LB.
-# module "coordinator_lb" {
-#   source            = "GoogleCloudPlatform/lb-http/google"
-#   version           = "1.0.10"
-#   region            = "${var.region}"
-#   name              = "${var.coordinator_group_lb_name}"
-#   firewall_networks = ["${var.network}"]
-#   backend_protocol = "HTTP"
-#   http_forward     = true
-#   ssl              = false
-#   target_tags = ["${module.coordinator_group.target_tags}"]
-#   backends = {
-#     "0" = [
-#       {
-#         group = "${module.coordinator_group.instance_group}"
-#       },
-#     ]
-#   }
-#   backend_params = [
-#     // health check path, port name, port number, timeout seconds.
-#     "/,http,${module.coordinator_group.service_port},30",
-#   ]
-# }
-
 module "coordinator_group" {
   source  = "GoogleCloudPlatform/managed-instance-group/google"
   version = "1.1.15"
 
-  name = "${var.coordinator_group_name}"
+  name = "${var.coordinator_group_name != ""
+          ? var.coordinator_group_name
+          : "${var.environment_name}-coordinators"}"
 
   # Coordinator Pool is fixed to 1 (PrestoSQL specifics) 
   # See: https://github.com/prestosql/presto/issues/391 
@@ -89,23 +119,23 @@ module "coordinator_group" {
   disk_type     = "${var.coordinator_disk_type}"
 
   startup_script = "${var.coordinator_startup_script != "" 
-  ? var.coordinator_startup_script 
-  : data.template_file.coordinator-startup-script.rendered}"
+                    ? var.coordinator_startup_script 
+                    : data.template_file.coordinator-startup-script.rendered}"
 
   service_port      = "${var.http_port}"
   service_port_name = "http"
   http_health_check = false
-  target_pools      = ["${module.coordinator_lb.target_pool}"]
-  target_tags       = ["allow-prestosql-coordinator"]
+  target_pools      = ["${google_compute_target_pool.prestosql.self_link}"]
+  target_tags       = ["allow-presto-${var.environment_name}-coordinator", "allow-presto-${var.environment_name}"]
 
   wait_for_instances = true
 }
 
 data "template_file" "worker_config" {
-  template = "${file("${format("%s/templates/coordinator.config.tpl", path.module)}")}"
+  template = "${file("${format("%s/templates/worker.config.tpl", path.module)}")}"
 
   vars {
-    PRESTOSQL_COORDINATOR = "http://${module.coordinator_lb.external_ip}:${var.http_port}"
+    PRESTOSQL_COORDINATOR = "http://${google_compute_forwarding_rule.prestosql.ip_address}:${var.http_port}"
     PRESTOSQL_PORT        = "${var.http_port}"
   }
 }
@@ -126,7 +156,10 @@ module "worker_group" {
   source  = "GoogleCloudPlatform/managed-instance-group/google"
   version = "1.1.15"
 
-  name = "${var.worker_group_name}"
+  name = "${var.worker_group_name != ""
+          ? var.worker_group_name
+          : "${var.environment_name}-workers"}"
+
   size = "${var.worker_group_size}"
 
   region     = "${var.region}"
@@ -139,8 +172,8 @@ module "worker_group" {
   disk_type     = "${var.worker_disk_type}"
 
   startup_script = "${var.worker_startup_script != "" 
-  ? var.worker_startup_script 
-  : data.template_file.worker-startup-script.rendered}"
+                   ? var.worker_startup_script 
+                   : data.template_file.worker-startup-script.rendered}"
 
   # TODO: Wait for 0.12 nulls?
   # https://www.hashicorp.com/blog/terraform-0-12-conditional-operator-improvements
@@ -150,6 +183,6 @@ module "worker_group" {
   service_port_name  = "http"
   http_health_check  = false
   target_pools       = []
-  target_tags        = ["allow-prestosql-worker"]
+  target_tags        = ["allow-presto-${var.environment_name}"]
   wait_for_instances = true
 }

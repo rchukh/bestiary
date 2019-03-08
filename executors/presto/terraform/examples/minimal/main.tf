@@ -16,6 +16,7 @@ resource "google_compute_network" "prestosql" {
 resource "google_compute_subnetwork" "prestosql" {
   name          = "bestiary-default"
   network       = "${google_compute_network.prestosql.self_link}"
+  region        = "${var.region}"
   ip_cidr_range = "10.0.0.0/16"
 }
 
@@ -26,12 +27,11 @@ module "prestosql" {
   region  = "${var.region}"
   zone    = "${var.zone}"
 
-  network    = "${google_compute_network.prestosql.self_link}"
-  subnetwork = "${google_compute_subnetwork.prestosql.prestosql.self_link}"
+  network          = "${google_compute_network.prestosql.self_link}"
+  subnetwork       = "${google_compute_subnetwork.prestosql.self_link}"
+  subnetwork_range = "${google_compute_subnetwork.prestosql.ip_cidr_range}"
 
-  environment_name          = "single_node"
-  coordinator_group_name    = "single-coordinator"
-  coordinator_group_lb_name = "single-coordinator-lb"
-  worker_group_name         = "single-worker"
-  worker_group_size         = 1
+  # NOTE: Environment name is used in GCP resources name (e.g. cannot contain some symbols _)
+  environment_name  = "singlenode"
+  worker_group_size = 1
 }

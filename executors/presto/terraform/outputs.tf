@@ -1,3 +1,3 @@
 output "coordinator_lb_ip" {
-  value = "${module.coordinator_lb.external_ip}"
+  value = "${google_compute_forwarding_rule.prestosql.ip_address}"
 }

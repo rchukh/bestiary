@@ -28,6 +28,6 @@ Provide the require variables and build the image:
 
 ```sh
 packer build \
-   -var 'gcp_project_id=my_project'
+   -var 'gcp_project_id=my_project' \
    gcloud.json
 ```

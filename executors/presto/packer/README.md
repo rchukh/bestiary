@@ -1,4 +1,5 @@
 # Presto Packer configuration
+
 ## Overview
 
 Packer configuration of [PrestoSQL](https://prestosql.io).
@@ -13,13 +14,20 @@ Packer configuration of [PrestoSQL](https://prestosql.io).
 - Prometheus Node Exporter (Port 9100)
 - Prometheus JMX Exporter (Port 8081)
 
+## Variables
+
+| Tables           | Required | Description                      |                                          Default |
+| ---------------- | :------: | -------------------------------- | -----------------------------------------------: |
+| gcp_account_file |   yes    | Path to GCP Service Account file | `GOOGLE_CLOUD_KEYFILE_JSON` environment variable |
+| gcp_project_id   |   yes    | GCP Project Id                   |                                                  |
+| gcp_zone         |    no    | GCP Zone                         |                                 `europe-west1-d` |
+
 ## Build
 
-1. Open `gcloud.json` and change the following:
-    - `account_file` to match your Google Cloud  credential file
-    - `project_id` to match your Google Cloud Project
-2. Build the image
+Provide the require variables and build the image:
 
-    ```sh
-    packer build gcloud.json
-    ```
+```sh
+packer build \
+   -var 'gcp_project_id=my_project'
+   gcloud.json
+```

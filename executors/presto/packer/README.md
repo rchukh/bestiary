@@ -6,16 +6,18 @@ Packer configuration of [PrestoSQL](https://prestosql.io).
 ## Configurations
 
 - CentOS 7
-- Presto [305](https://prestosql.io/docs/current/release/release-305.html)
-- Mainline Kernel from elrepo with TCP BBR as default
+- [Presto 305](https://prestosql.io/docs/current/release/release-305.html)
+- [Mainline Kernel from elrepo](https://elrepo.org/tiki/kernel-ml) with TCP BBR as default
 - Monit over SysVinit that comes with Presto
-- Amazon Corretto 1.8 as JVM
+- [Amazon Corretto 1.8](https://aws.amazon.com/corretto/) as JVM
 - Prometheus Node Exporter (Port 9100)
 - Prometheus JMX Exporter (Port 8081)
 
 ## Build
 
-1. Change the `account_file` to match your Google Cloud credential file and `project_id` to match your Google Cloud Project.
+1. Open `gcloud.json` and change the following:
+    - `account_file` to match your Google Cloud  credential file
+    - `project_id` to match your Google Cloud Project
 2. Build the image
 
     ```sh

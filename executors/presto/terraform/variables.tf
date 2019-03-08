@@ -25,7 +25,7 @@ variable "subnetwork_range" {
 }
 
 variable "environment_name" {
-  description = "PrestoSQL Environment Name (used in WEB UI)"
+  description = "Presto Environment Name (used in WEB UI)"
 }
 
 variable "http_port" {
@@ -49,7 +49,7 @@ variable "coordinator_group_lb_schema" {
 }
 
 variable "coordinator_image" {
-  description = "PrestoSQL Image to use for coordinator"
+  description = "Presto Image to use for coordinator"
   default     = "bestiary-prestosql-1552046971"
 }
 
@@ -87,7 +87,7 @@ variable "worker_group_size" {
 }
 
 variable "worker_image" {
-  description = "PrestoSQL Image to use for worker"
+  description = "Presto Image to use for worker"
   default     = "bestiary-prestosql-1552046971"
 }
 

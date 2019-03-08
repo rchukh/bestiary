@@ -1,5 +1,5 @@
 coordinator=true
 node-scheduler.include-coordinator=false
-http-server.http.port=${PRESTOSQL_PORT}
+http-server.http.port=${PORT}
 discovery-server.enabled=true
-discovery.uri=${PRESTOSQL_COORDINATOR}
+discovery.uri=${COORDINATOR}

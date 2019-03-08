@@ -13,37 +13,37 @@ provider "google" {
   zone    = "${var.zone}"
 }
 
-resource "google_compute_http_health_check" "prestosql" {
-  name = "${var.coordinator_group_lb_name != ""
-                   ? var.coordinator_group_lb_name
-                   : "${var.environment_name}-lb"}"
+resource "google_compute_http_health_check" "presto" {
+  name = "presto-${var.environment_name}-hc"
 
   project      = "${var.project}"
   port         = "${var.http_port}"
   request_path = "/v1/status"
 }
 
-resource "google_compute_target_pool" "prestosql" {
-  name = "${var.environment_name}-pool"
+resource "google_compute_target_pool" "presto" {
+  name = "presto-${var.environment_name}-pool"
 
   project          = "${var.project}"
   region           = "${var.region}"
   session_affinity = "NONE"
-  health_checks    = ["${google_compute_http_health_check.prestosql.name}"]
+  health_checks    = ["${google_compute_http_health_check.presto.name}"]
 }
 
-resource "google_compute_forwarding_rule" "prestosql" {
-  name = "${var.environment_name}-fr"
+resource "google_compute_forwarding_rule" "presto" {
+  name = "${var.coordinator_group_lb_name != ""
+          ? var.coordinator_group_lb_name
+          : "presto-${var.environment_name}-lb"}"
 
   project               = "${var.project}"
-  target                = "${google_compute_target_pool.prestosql.self_link}"
+  target                = "${google_compute_target_pool.presto.self_link}"
   load_balancing_scheme = "${var.coordinator_group_lb_schema}"
   port_range            = "${var.http_port}"
 }
 
 # TODO: Set source_ranges to internal network in case of Internal LB 
-resource "google_compute_firewall" "prestosql-lb-fw" {
-  name = "presto-${var.environment_name}-fr"
+resource "google_compute_firewall" "presto-lb-fw" {
+  name = "presto-${var.environment_name}-fr-fw"
 
   project = "${var.project}"
   network = "${var.network}"
@@ -58,13 +58,11 @@ resource "google_compute_firewall" "prestosql-lb-fw" {
 }
 
 # Allow communications between coordinator and workers
-resource "google_compute_firewall" "prestosql" {
+resource "google_compute_firewall" "presto" {
+  name = "presto-${var.environment_name}-communications"
+
   project = "${var.project}"
   network = "${var.network}"
-
-  name = "${var.worker_group_name != ""
-          ? var.worker_group_name
-          : "${var.environment_name}-communications"}"
 
   allow {
     protocol = "tcp"
@@ -80,8 +78,8 @@ data "template_file" "coordinator_config" {
 
   vars {
     # NOTE: Coordinator does not need to go through LB to its own location.
-    PRESTOSQL_COORDINATOR = "http://localhost:${var.http_port}"
-    PRESTOSQL_PORT        = "${var.http_port}"
+    COORDINATOR = "http://localhost:${var.http_port}"
+    PORT        = "${var.http_port}"
   }
 }
 
@@ -89,11 +87,11 @@ data "template_file" "coordinator-startup-script" {
   template = "${file("${format("%s/templates/startup.sh.tpl", path.module)}")}"
 
   vars {
-    PRESTOSQL_ENV_NAME = "${var.environment_name}"
+    ENV_NAME = "${var.environment_name}"
 
-    PRESTOSQL_CONFIG = "${var.coordinator_config != ""
-      ? var.coordinator_config
-      : data.template_file.coordinator_config.rendered}"
+    PRESTO_CONFIG = "${var.coordinator_config != ""
+                     ? var.coordinator_config
+                     : data.template_file.coordinator_config.rendered}"
   }
 }
 
@@ -103,9 +101,9 @@ module "coordinator_group" {
 
   name = "${var.coordinator_group_name != ""
           ? var.coordinator_group_name
-          : "${var.environment_name}-coordinators"}"
+          : "presto-${var.environment_name}-coordinators"}"
 
-  # Coordinator Pool is fixed to 1 (PrestoSQL specifics) 
+  # Coordinator Pool is fixed to 1 (Presto specifics) 
   # See: https://github.com/prestosql/presto/issues/391 
   size = 1
 
@@ -125,7 +123,7 @@ module "coordinator_group" {
   service_port      = "${var.http_port}"
   service_port_name = "http"
   http_health_check = false
-  target_pools      = ["${google_compute_target_pool.prestosql.self_link}"]
+  target_pools      = ["${google_compute_target_pool.presto.self_link}"]
   target_tags       = ["allow-presto-${var.environment_name}-coordinator", "allow-presto-${var.environment_name}"]
 
   wait_for_instances = true
@@ -135,8 +133,8 @@ data "template_file" "worker_config" {
   template = "${file("${format("%s/templates/worker.config.tpl", path.module)}")}"
 
   vars {
-    PRESTOSQL_COORDINATOR = "http://${google_compute_forwarding_rule.prestosql.ip_address}:${var.http_port}"
-    PRESTOSQL_PORT        = "${var.http_port}"
+    COORDINATOR = "http://${google_compute_forwarding_rule.presto.ip_address}:${var.http_port}"
+    PORT        = "${var.http_port}"
   }
 }
 
@@ -144,11 +142,11 @@ data "template_file" "worker-startup-script" {
   template = "${file("${format("%s/templates/startup.sh.tpl", path.module)}")}"
 
   vars {
-    PRESTOSQL_ENV_NAME = "${var.environment_name}"
+    ENV_NAME = "${var.environment_name}"
 
-    PRESTOSQL_CONFIG = "${var.worker_config != ""
-      ? var.worker_config
-      : data.template_file.worker_config.rendered}"
+    PRESTO_CONFIG = "${var.worker_config != ""
+                     ? var.worker_config
+                     : data.template_file.worker_config.rendered}"
   }
 }
 
@@ -158,7 +156,7 @@ module "worker_group" {
 
   name = "${var.worker_group_name != ""
           ? var.worker_group_name
-          : "${var.environment_name}-workers"}"
+          : "presto-${var.environment_name}-workers"}"
 
   size = "${var.worker_group_size}"
 
@@ -172,8 +170,8 @@ module "worker_group" {
   disk_type     = "${var.worker_disk_type}"
 
   startup_script = "${var.worker_startup_script != "" 
-                   ? var.worker_startup_script 
-                   : data.template_file.worker-startup-script.rendered}"
+                    ? var.worker_startup_script 
+                    : data.template_file.worker-startup-script.rendered}"
 
   # TODO: Wait for 0.12 nulls?
   # https://www.hashicorp.com/blog/terraform-0-12-conditional-operator-improvements

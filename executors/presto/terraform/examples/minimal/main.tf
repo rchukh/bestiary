@@ -8,28 +8,28 @@ provider "google" {
   zone    = "${var.zone}"
 }
 
-resource "google_compute_network" "prestosql" {
+resource "google_compute_network" "presto" {
   name                    = "bestiary-vpc"
   auto_create_subnetworks = "false"
 }
 
-resource "google_compute_subnetwork" "prestosql" {
+resource "google_compute_subnetwork" "presto" {
   name          = "bestiary-default"
-  network       = "${google_compute_network.prestosql.self_link}"
+  network       = "${google_compute_network.presto.self_link}"
   region        = "${var.region}"
   ip_cidr_range = "10.0.0.0/16"
 }
 
-module "prestosql" {
+module "presto" {
   source = "../../"
 
   project = "${var.project}"
   region  = "${var.region}"
   zone    = "${var.zone}"
 
-  network          = "${google_compute_network.prestosql.self_link}"
-  subnetwork       = "${google_compute_subnetwork.prestosql.self_link}"
-  subnetwork_range = "${google_compute_subnetwork.prestosql.ip_cidr_range}"
+  network          = "${google_compute_network.presto.self_link}"
+  subnetwork       = "${google_compute_subnetwork.presto.self_link}"
+  subnetwork_range = "${google_compute_subnetwork.presto.ip_cidr_range}"
 
   # NOTE: Environment name is used in GCP resources name (e.g. cannot contain some symbols _)
   environment_name  = "singlenode"

@@ -28,7 +28,8 @@ sudo sed -i.bak \
 sudo systemctl enable postgresql-10.service
 sudo systemctl start postgresql-10.service
 
-# TODO: This is just a default, move this somewhere
+# TODO: Make password configurable through Packer's ENV variables
+# https://www.packer.io/docs/provisioners/shell.html#environment_vars
 sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'timescale';"
 
 

@@ -10,7 +10,7 @@ TMP_DIR=/tmp/$(uuidgen -t)
 PRESTOSQL_VERSION=305
 PRESTOSQL_DIST=presto-server-rpm-$PRESTOSQL_VERSION.rpm
 
-# Download and install Amazon Corretto
+# Download and install
 sudo mkdir -p $TMP_DIR
 sudo wget http://central.maven.org/maven2/io/prestosql/presto-server-rpm/$PRESTOSQL_VERSION/$PRESTOSQL_DIST -O $TMP_DIR/$PRESTOSQL_DIST
 sudo yum -y localinstall $TMP_DIR/$PRESTOSQL_DIST

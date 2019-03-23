@@ -5,7 +5,7 @@
 # Mutation required:
 # - base.sh
 ##
-TMP_DIR=/tmp/$(uuidgen -t)
+TMP_DIR=/tmp/bestiary/$(uuidgen -t)
 
 SERVICE_VERSION=0.7
 SERVICE_DIST=benchto-service-$SERVICE_VERSION.jar
@@ -13,7 +13,7 @@ SERVICE_DESTINATION=/opt/benchto/service
 
 # Download and install
 sudo mkdir -p $TMP_DIR
-sudo wget http://central.maven.org/maven2/io/prestosql/benchto/benchto-service/$SERVICE_VERSION/$SERVICE_DIST -O $TMP_DIR/$SERVICE_DIST
+sudo curl -L -o $TMP_DIR/$SERVICE_DIST http://central.maven.org/maven2/io/prestosql/benchto/benchto-service/$SERVICE_VERSION/$SERVICE_DIST
 
 sudo mkdir -p $SERVICE_DESTINATION
 sudo mv $TMP_DIR/$SERVICE_DIST $SERVICE_DESTINATION
@@ -49,4 +49,4 @@ java -Xmx1g -jar $SERVICE_DIST
 EOF
 
 # Clean up tmp files
-sudo rm -f $TMP_DIR/$SERVICE_DIST
+sudo rm -rf $TMP_DIR

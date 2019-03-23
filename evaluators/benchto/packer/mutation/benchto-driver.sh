@@ -5,7 +5,7 @@
 # Mutation required:
 # - base.sh
 ##
-TMP_DIR=/tmp/$(uuidgen -t)
+TMP_DIR=/tmp/bestiary/$(uuidgen -t)
 
 DRIVER_VERSION=0.7
 DRIVER_DIST=benchto-driver-$DRIVER_VERSION.jar
@@ -13,7 +13,7 @@ DRIVER_DESTINATION=/opt/benchto/driver
 
 # Download and install
 sudo mkdir -p $TMP_DIR
-sudo wget http://central.maven.org/maven2/io/prestosql/benchto/benchto-driver/$DRIVER_VERSION/$DRIVER_DIST -O $TMP_DIR/$DRIVER_DIST
+sudo curl -L -o $TMP_DIR/$DRIVER_DIST http://central.maven.org/maven2/io/prestosql/benchto/benchto-driver/$DRIVER_VERSION/$DRIVER_DIST
 
 sudo mkdir -p $DRIVER_DESTINATION
 sudo mv $TMP_DIR/$DRIVER_DIST $DRIVER_DESTINATION
@@ -78,4 +78,4 @@ EOF
 
 
 # Clean up tmp files
-sudo rm -f $TMP_DIR/$DRIVER_DIST
+sudo rm -rf $TMP_DIR/

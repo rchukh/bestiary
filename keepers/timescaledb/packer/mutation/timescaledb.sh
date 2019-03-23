@@ -47,7 +47,8 @@ sudo systemctl start postgresql-11
 # Pass through Packer's ENV variables
 # https://www.packer.io/docs/provisioners/shell.html#environment_vars
 sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$POSTGRESQL_PASSWORD';"
-sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;"
+# TODO: Execute this within database
+# sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;"
 
 # TODO: Add pg_prometheus
 # TODO: Add prometheus-postgresql-adapter

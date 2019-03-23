@@ -2,11 +2,19 @@
     "variables": {
       "gcp_account_file": "{{env `GOOGLE_CLOUD_KEYFILE_JSON`}}",
       "gcp_project_id": "",
-      "gcp_zone": "europe-west1-d"
+      "gcp_zone": "europe-west1-d",
+      "postgresql_password": "postgres",
+      "benchto_db_create": "true",
+      "benchto_db": "benchto"
     },
     "provisioners": [
       {
         "type": "shell",
+        "environment_vars": [
+          "POSTGRESQL_PASSWORD={{user `postgresql_password`}}",
+          "BENCHTO_CREATE_DATABASE={{user `benchto_db_create`}}",
+          "BENCHTO_DATABASE={{user `benchto_db`}}"
+        ],
         "scripts": [
             "../../../vm/centos/mutation/base.sh",
             "../../../vm/centos/mutation/commons/kernel.sh",

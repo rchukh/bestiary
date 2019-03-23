@@ -9,13 +9,44 @@ TMP_DIR=/tmp/$(uuidgen -t)
 
 SERVICE_VERSION=0.7
 SERVICE_DIST=benchto-service-$SERVICE_VERSION.jar
-SERVICE_DEST=/opt/benchto/service
+SERVICE_DESTINATION=/opt/benchto/service
 
 # Download and install
 sudo mkdir -p $TMP_DIR
 sudo wget http://central.maven.org/maven2/io/prestosql/benchto/benchto-service/$SERVICE_VERSION/$SERVICE_DIST -O $TMP_DIR/$SERVICE_DIST
-# TODO: "install"
-# https://github.com/prestosql/benchto/blob/master/benchto-service/src/main/resources/application.yaml
+
+sudo mkdir -p $SERVICE_DESTINATION
+sudo mv $TMP_DIR/$SERVICE_DIST $SERVICE_DESTINATION
+
+# Prepare initial configuration
+sudo tee $SERVICE_DESTINATION/application.yaml <<EOF
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/$BENCHTO_DATABASE
+    username: postgres
+    password: $POSTGRESQL_PASSWORD
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false
+    hibernate.ddl-auto: validate
+    properties:
+      hibernate.cache.region.factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+      hibernate.cache.use_second_level_cache: true
+      hibernate.cache.use_query_cache: true
+      javax.persistence.sharedCache.mode: ENABLE_SELECTIVE
+
+EOF
+
+# Create Database on Local PostgreSQL installation
+if [ "$BENCHTO_CREATE_DATABASE" = true ] ; then
+  sudo -u postgres psql -c "CREATE DATABASE $BENCHTO_DATABASE;"
+fi
+
+sudo tee $SERVICE_DESTINATION/samplerun.sh <<EOF
+#!/bin/bash
+
+java -Xmx1g -jar $SERVICE_DIST
+EOF
 
 # Clean up tmp files
 sudo rm -f $TMP_DIR/$SERVICE_DIST

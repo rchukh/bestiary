@@ -69,37 +69,16 @@ sudo yum -y --enablerepo=extras install centos-release-scl
 sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 sudo yum -y --enablerepo=epel install llvm5.0 
 sudo yum -y install devtoolset-7 llvm-toolset-7
-sudo yum -y install patch
-sudo tee $TMP_DIR/pg_prometheus.11.patch <<EOF
-diff -c pg_prometheus/src/prom.c pg_prometheus_patch/src/prom.c
-*** pg_prometheus/src/prom.c      2018-08-17 13:04:20.000000000 +0000
---- pg_prometheus_patch/src/prom.c        2019-03-23 21:43:29.000000000 +0000
-***************
-*** 404,410 ****
-        TimestampTz ts = PG_GETARG_TIMESTAMPTZ(0);
-        text       *name = PG_GETARG_TEXT_PP(1);
-        float8          value = PG_GETARG_FLOAT8(2);
-!       Jsonb      *jb = PG_GETARG_JSONB(3);
-
-        char       *metric_name = text_to_cstring(name);
-        PrometheusJsonbParseCtx ctx = {0};
---- 404,414 ----
-        TimestampTz ts = PG_GETARG_TIMESTAMPTZ(0);
-        text       *name = PG_GETARG_TEXT_PP(1);
-        float8          value = PG_GETARG_FLOAT8(2);
-!       #ifdef PG_GETARG_JSONB_P
-!           Jsonb   *jb = PG_GETARG_JSONB_P(3);
-!       #else
-!           Jsonb   *jb = PG_GETARG_JSONB(3);
-!       #endif
-
-        char       *metric_name = text_to_cstring(name);
-        PrometheusJsonbParseCtx ctx = {0};
-EOF
-cd $TMP_DIR
-# TODO: Fix this, patch didn't apply (probably because of spaces, line breaks, etc.)
-sudo patch -p0 -i pg_prometheus.11.patch
 # END Workaround
+# START Patch pg_prometheus to work with PostgreSQL 11
+# Changes taken from https://github.com/timescale/pg_prometheus/pull/36
+# Packer already uploaded /tmp/pg_prometheus.patch
+sudo yum -y install patch
+cd $TMP_DIR
+sudo cp /tmp/pg_prometheus.patch $TMP_DIR/pg_prometheus.11.patch
+sudo patch -p0 -i pg_prometheus.11.patch
+# END Patch pg_prometheus to work with PostgreSQL 11
+# Build pg_prometheus
 cd $PG_PROM_BUILD_DIR
 sudo make PG_CONFIG=/usr/pgsql-11/bin/pg_config
 sudo make PG_CONFIG=/usr/pgsql-11/bin/pg_config install 
@@ -118,6 +97,8 @@ sudo -u postgres psql -c "CREATE ROLE prometheus WITH LOGIN PASSWORD '$POSTGRESQ
 sudo -u postgres psql -c "CREATE DATABASE prometheus WITH OWNER prometheus;"
 sudo -u postgres psql -d "prometheus" -c "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;"
 sudo -u postgres psql -d "prometheus" -c "CREATE EXTENSION IF NOT EXISTS pg_prometheus;"
+# NOTE: Ignore message "ERROR:  permission denied for schema prometheus"
+# See below for details on why.
 export PGPASSWORD="$POSTGRESQL_PASSWORD"; psql -h localhost -U prometheus -c "SELECT create_prometheus_table('metrics',use_timescaledb=>true);"
 # sudo -u postgres psql -d "prometheus" -c "SELECT create_prometheus_table('metrics',use_timescaledb=>true);"
 sudo -u postgres psql -d "prometheus" -c "GRANT ALL ON SCHEMA prometheus TO prometheus;"

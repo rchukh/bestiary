@@ -3,18 +3,38 @@
       "gcp_account_file": "{{env `GOOGLE_CLOUD_KEYFILE_JSON`}}",
       "gcp_project_id": "",
       "gcp_zone": "europe-west1-d",
+
+      "postgresql_password": "postgres",
+
+      "benchto_db_create": "true",
+      "benchto_db": "benchto",
+      "benchto_db_user": "postgres",
+      "benchto_db_password": "postgres",
+
       "version": "0.1"
     },
     "provisioners": [
       {
+        "type": "file",
+        "source": "../../../keepers/timescaledb/packer/files/pg_prometheus.patch",
+        "destination": "/tmp/pg_prometheus.patch"
+      },
+      {
         "type": "shell",
+        "environment_vars": [
+          "POSTGRESQL_PASSWORD={{user `postgresql_password`}}",
+          "BENCHTO_CREATE_DATABASE={{user `benchto_db_create`}}",
+          "BENCHTO_DB={{user `benchto_db`}}",
+          "BENCHTO_DB_USER={{user `benchto_db_user`}}",
+          "BENCHTO_DB_PASSWORD={{user `benchto_db_password`}}"
+        ],
         "scripts": [
             "../../../vm/centos/mutation/base.sh",
             "../../../vm/centos/mutation/commons/kernel.sh",
             "../../../vm/centos/mutation/commons/monit.sh",
             "../../../vm/centos/mutation/observers/prometheus/node_exporter.sh",
             "../../../vm/centos/mutation/runtimes/java/corretto_8.sh",
-             
+            "../../../keepers/timescaledb/packer/mutation/timescaledb.sh",
             "../../../evaluators/mutation/benchto-service.sh",
             "../../../evaluators/mutation/benchto-driver.sh"
         ]

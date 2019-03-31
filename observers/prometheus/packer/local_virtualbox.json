@@ -1,9 +1,22 @@
 {
+  "variables": {
+    "postgresql_password": "postgres"
+  },
   "provisioners" : [
     {
+      "type": "file",
+      "source": "../../../keepers/timescaledb/packer/files/pg_prometheus.patch",
+      "destination": "/tmp/pg_prometheus.patch"
+    },
+    {
       "type": "shell",
+      "environment_vars": [
+        "POSTGRESQL_PASSWORD={{user `postgresql_password`}}"
+      ],
       "scripts": [
-          "mutation/prometheus.sh"
+          "../../../keepers/timescaledb/packer/mutation/timescaledb.sh",
+          "mutation/prometheus.sh",
+          "mutation/prometheus-postgresql-adapter.sh"
       ]
     }
   ],

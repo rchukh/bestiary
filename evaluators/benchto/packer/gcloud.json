@@ -5,7 +5,9 @@
       "gcp_zone": "europe-west1-d",
       "postgresql_password": "postgres",
       "benchto_db_create": "true",
-      "benchto_db": "benchto"
+      "benchto_db": "benchto",
+      "benchto_db_user": "postgres",
+      "benchto_db_password": "postgres"
     },
     "provisioners": [
       {
@@ -18,7 +20,9 @@
         "environment_vars": [
           "POSTGRESQL_PASSWORD={{user `postgresql_password`}}",
           "BENCHTO_CREATE_DATABASE={{user `benchto_db_create`}}",
-          "BENCHTO_DATABASE={{user `benchto_db`}}"
+          "BENCHTO_DB={{user `benchto_db`}}",
+          "BENCHTO_DB_USER={{user `benchto_db_user`}}",
+          "BENCHTO_DB_PASSWORD={{user `benchto_db_password`}}"
         ],
         "scripts": [
             "../../../vm/centos/mutation/base.sh",

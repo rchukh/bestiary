@@ -22,9 +22,9 @@ sudo mv $TMP_DIR/$SERVICE_DIST $SERVICE_DESTINATION
 sudo tee $SERVICE_DESTINATION/application.yaml <<EOF
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/$BENCHTO_DATABASE
-    username: postgres
-    password: $POSTGRESQL_PASSWORD
+    url: jdbc:postgresql://localhost:5432/$BENCHTO_DB
+    username: $BENCHTO_DB_USER
+    password: $BENCHTO_DB_PASSWORD
     driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
@@ -39,7 +39,7 @@ EOF
 
 # Create Database on Local PostgreSQL installation
 if [ "$BENCHTO_CREATE_DATABASE" = true ] ; then
-  sudo -u postgres psql -c "CREATE DATABASE $BENCHTO_DATABASE;"
+  sudo -u postgres psql -c "CREATE DATABASE $BENCHTO_DB;"
 fi
 
 sudo tee $SERVICE_DESTINATION/samplerun.sh <<EOF

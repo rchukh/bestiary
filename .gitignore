@@ -10,3 +10,5 @@
 account.json
 *.tfstate
 *.backup
+packer_cache
+output-vagrant

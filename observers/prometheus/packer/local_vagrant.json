@@ -27,7 +27,7 @@
       "source_path": "centos/7",
       "box_version": "1902.01",
       "provider": "virtualbox",
-      "box_name": "bestiary-centos7-{{timestamp}}",
+      "box_name": "bestiary-prometheus-{{timestamp}}",
       "skip_add": true,
       "skip_package": true,
       "teardown_method": "destroy"

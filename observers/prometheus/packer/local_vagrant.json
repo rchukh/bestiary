@@ -24,8 +24,8 @@
     {
       "type": "vagrant",
       "communicator": "ssh",
-      "source_path": "centos/7",
-      "box_version": "1902.01",
+      "source_path": "rchukh/bestiary-centos",
+      "box_version": "1.0.0",
       "provider": "virtualbox",
       "box_name": "bestiary-prometheus-{{timestamp}}",
       "skip_add": true,

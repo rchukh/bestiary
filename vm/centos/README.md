@@ -1,5 +1,7 @@
 # Bestiary Base Linux VM
 
+Vagrant Cloud: [rchukh/bestiary-centos](https://app.vagrantup.com/rchukh/boxes/bestiary-centos)
+
 ## Overview
 
 Base:

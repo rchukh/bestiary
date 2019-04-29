@@ -24,7 +24,7 @@ Packer configuration of [PrestoSQL](https://prestosql.io).
 
 ## Build
 
-Provide the require variables and build the image:
+Provide the required variables and build the image:
 
 ```sh
 packer build \

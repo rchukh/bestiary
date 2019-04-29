@@ -22,15 +22,15 @@
   ],
   "builders": [
     {
-      "type": "virtualbox-ovf",
+      "type": "vagrant",
       "communicator": "ssh",
-      "source_path": "file:///tmp/ovf/centos7/centos7.ovf",
-      "ssh_username": "vagrant",
-      "ssh_private_key_file": "C:/Workspace/VM/bestiary/.vagrant/machines/default/virtualbox/private_key",
-      "ssh_port": "22",
-      "shutdown_command": "echo 'packer' | sudo -S shutdown -P now",
-      "vm_name" : "bestiary-prometheus-{{timestamp}}"
+      "source_path": "rchukh/bestiary-centos",
+      "box_version": "2.0.0",
+      "provider": "virtualbox",
+      "box_name": "bestiary-prometheus-{{timestamp}}",
+      "skip_add": true,
+      "skip_package": true,
+      "teardown_method": "destroy"
     }
-  ],
-  "post-processors": ["vagrant"]
+  ]
 }

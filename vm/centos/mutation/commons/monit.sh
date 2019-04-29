@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 ##
 # Installs monit - https://mmonit.com/monit/
 #

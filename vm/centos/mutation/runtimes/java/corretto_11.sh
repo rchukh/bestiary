@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 ##
 # Installs Amazon Corretto 11 - https://aws.amazon.com/corretto/
 #

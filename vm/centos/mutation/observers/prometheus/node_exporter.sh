@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 ##
 # Installs Prometheus Node Exporter - https://github.com/prometheus/node_exporter/
 #

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 ##
 # Installs Amazon Corretto 1.8 - https://aws.amazon.com/corretto/
 #

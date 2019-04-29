@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 ##
 # Updates to the latest "mainline stable" Kernel (http://elrepo.org/tiki/kernel-ml).
 # Enables Google BBR:

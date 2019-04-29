@@ -7,21 +7,21 @@ Vagrant Cloud: [rchukh/bestiary-centos](https://app.vagrantup.com/rchukh/boxes/b
 Base:
 
 - Google Cloud CentOS 7 (gcloud.json config)
-- Vagrant CentOS 1902.01 (local_vagrant.json config)
+- Vagrant CentOS 1902.01 (vagrant.json config)
 
 Notable Changes:
 
 - [Mainline branch](https://www.kernel.org/) Linux Kernel
 - [TCP BBR](https://medium.com/google-cloud/tcp-bbr-magic-dust-for-network-performance-57a5f1ccf437)
 - Prometheus [Node Exporter](https://github.com/prometheus/node_exporter)
-- [Amazon Corretto 1.8 (default) / 11](https://aws.amazon.com/corretto/)
+- [Monit](https://mmonit.com/monit/changes/)
 
 ## Build Vagrant Box (Local Development)
 
 1. Build the box
 
     ```sh
-    packer build local_vagrant.json
+    packer build vagrant.json
     ```
 
 2. Add the box to the local Vagrant boxes (change the <NAME> to name the box)

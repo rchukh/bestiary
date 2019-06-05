@@ -113,3 +113,15 @@ variable "worker_startup_script" {
   description = "Worker startup script override"
   default     = ""
 }
+
+variable "service_account_scopes" {
+  description = "List of scopes for the instance template service account"
+  type        = "list"
+
+  default = [
+    "https://www.googleapis.com/auth/compute",
+    "https://www.googleapis.com/auth/logging.write",
+    "https://www.googleapis.com/auth/monitoring.write",
+    "https://www.googleapis.com/auth/devstorage.full_control",
+  ]
+}

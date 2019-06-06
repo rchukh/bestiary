@@ -25,13 +25,11 @@ resource "google_compute_target_pool" "presto" {
   project          = var.project
   region           = var.region
   session_affinity = "NONE"
-  health_checks    = [
-    google_compute_http_health_check.presto.name]
+  health_checks    = [google_compute_http_health_check.presto.name]
 }
 
 resource "google_compute_forwarding_rule" "presto" {
-  name = (var.coordinator_group_lb_name != "" ? var.coordinator_group_lb_name
-  : "presto-${var.environment_name}-lb")
+  name = (var.coordinator_group_lb_name != "" ? var.coordinator_group_lb_name : "presto-${var.environment_name}-lb")
 
   project               = var.project
   target                = google_compute_target_pool.presto.self_link
@@ -48,14 +46,11 @@ resource "google_compute_firewall" "presto-lb-fw" {
 
   allow {
     protocol = "tcp"
-    ports    = [
-      module.coordinator_group.service_port]
+    ports    = [module.coordinator_group.service_port]
   }
 
-  source_ranges = [
-    "0.0.0.0/0"]
-  target_tags   = [
-    "allow-presto-${var.environment_name}-coordinator"]
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["allow-presto-${var.environment_name}-coordinator"]
 }
 
 # Allow communications between coordinator and workers
@@ -67,14 +62,11 @@ resource "google_compute_firewall" "presto" {
 
   allow {
     protocol = "tcp"
-    ports    = [
-      var.http_port]
+    ports    = [var.http_port]
   }
 
-  source_ranges = [
-    var.subnetwork_range]
-  target_tags   = [
-    "allow-presto-${var.environment_name}"]
+  source_ranges = [var.subnetwork_range]
+  target_tags   = ["allow-presto-${var.environment_name}"]
 }
 
 data "template_file" "coordinator_config" {
@@ -94,8 +86,8 @@ data "template_file" "coordinator-startup-script" {
     ENV_NAME = var.environment_name
 
     PRESTO_CONFIG = (
-    var.coordinator_config != "" ? var.coordinator_config
-    : data.template_file.coordinator_config.rendered
+      var.coordinator_config != "" ? var.coordinator_config
+      : data.template_file.coordinator_config.rendered
     )
   }
 }
@@ -107,8 +99,7 @@ module "coordinator_group" {
   # - https://github.com/GoogleCloudPlatform/terraform-google-managed-instance-group/pull/39
   source = "git::https://github.com/joshuamkite/terraform-google-managed-instance-group.git?ref=feature/repair_module_and_autoscaling_example"
 
-  name = (var.coordinator_group_name != "" ? var.coordinator_group_name
-  : "presto-${var.environment_name}-coordinators" )
+  name = (var.coordinator_group_name != "" ? var.coordinator_group_name : "presto-${var.environment_name}-coordinators")
 
   # Coordinator Pool is fixed to 1 (Presto specifics) 
   # See: https://github.com/prestosql/presto/issues/391 
@@ -123,18 +114,17 @@ module "coordinator_group" {
   machine_type  = var.coordinator_type
   disk_type     = var.coordinator_disk_type
 
-  startup_script = (var.coordinator_startup_script != "" ? var.coordinator_startup_script
-  : data.template_file.coordinator-startup-script.rendered)
+  startup_script = (var.coordinator_startup_script != "" ? var.coordinator_startup_script : data.template_file.coordinator-startup-script.rendered)
 
   service_account_scopes = var.service_account_scopes
   service_port           = var.http_port
   service_port_name      = "http"
   http_health_check      = false
-  target_pools           = [
-    google_compute_target_pool.presto.self_link]
-  target_tags            = [
+  target_pools           = [google_compute_target_pool.presto.self_link]
+  target_tags = [
     "allow-presto-${var.environment_name}-coordinator",
-    "allow-presto-${var.environment_name}"]
+    "allow-presto-${var.environment_name}"
+  ]
 
   wait_for_instances = true
 }
@@ -164,8 +154,7 @@ module "worker_group" {
   # - https://github.com/GoogleCloudPlatform/terraform-google-managed-instance-group/pull/39
   source = "git::https://github.com/joshuamkite/terraform-google-managed-instance-group.git?ref=feature/repair_module_and_autoscaling_example"
 
-  name = (var.worker_group_name != "" ? var.worker_group_name
-  : "presto-${var.environment_name}-workers")
+  name = (var.worker_group_name != "" ? var.worker_group_name : "presto-${var.environment_name}-workers")
 
   size = var.worker_group_size
 
@@ -178,8 +167,7 @@ module "worker_group" {
   machine_type  = var.worker_type
   disk_type     = var.worker_disk_type
 
-  startup_script = (var.worker_startup_script != "" ? var.worker_startup_script
-  : data.template_file.worker-startup-script.rendered)
+  startup_script = (var.worker_startup_script != "" ? var.worker_startup_script : data.template_file.worker-startup-script.rendered)
 
   service_account_scopes = var.service_account_scopes
   service_port           = var.http_port

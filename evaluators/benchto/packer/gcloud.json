@@ -25,10 +25,6 @@
           "BENCHTO_DB_PASSWORD={{user `benchto_db_password`}}"
         ],
         "scripts": [
-            "../../../vm/centos/mutation/base.sh",
-            "../../../vm/centos/mutation/commons/kernel.sh",
-            "../../../vm/centos/mutation/commons/monit.sh",
-            "../../../vm/centos/mutation/observers/prometheus/node_exporter.sh",
             "../../../vm/centos/mutation/runtimes/java/corretto_8.sh",
             "../../../keepers/timescaledb/packer/mutation/timescaledb.sh",
             "mutation/benchto-service.sh",
@@ -45,7 +41,7 @@
         "use_internal_ip": false,
         "ssh_username": "packer",
 
-        "source_image_family": "centos-7",
+        "source_image_family": "bestiary-linux",
 
         "image_name" : "bestiary-benchto-{{timestamp}}",
         "image_family" : "bestiary-evaluators",

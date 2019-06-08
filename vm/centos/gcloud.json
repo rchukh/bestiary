@@ -11,8 +11,7 @@
         "mutation/base.sh",
         "mutation/commons/kernel.sh",
         "mutation/commons/monit.sh",
-        "mutation/observers/prometheus/node_exporter.sh",
-        "mutation/runtimes/java/corretto_8.sh"
+        "mutation/observers/prometheus/node_exporter.sh"
       ]
     }
   ],

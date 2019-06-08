@@ -1,14 +1,5 @@
-# TODO: Parameterize everything
 terraform {
   required_version = "~> 0.12"
-}
-
-provider "google" {
-  version = "~> 2.8.0"
-
-  project = var.project
-  region  = var.region
-  zone    = var.zone
 }
 
 resource "google_compute_http_health_check" "presto" {
@@ -32,6 +23,7 @@ resource "google_compute_forwarding_rule" "presto" {
   name = (var.coordinator_group_lb_name != "" ? var.coordinator_group_lb_name : "presto-${var.environment_name}-lb")
 
   project               = var.project
+  region                = var.region
   target                = google_compute_target_pool.presto.self_link
   load_balancing_scheme = var.coordinator_group_lb_schema
   port_range            = var.http_port
@@ -97,7 +89,7 @@ module "coordinator_group" {
   # version = "1.1.15"
   # Using Fork as original is incompatible with the Google >= 2.0 provider
   # - https://github.com/GoogleCloudPlatform/terraform-google-managed-instance-group/pull/39
-  source = "git::https://github.com/joshuamkite/terraform-google-managed-instance-group.git?ref=feature/repair_module_and_autoscaling_example"
+  source = "git::https://github.com/rchukh/terraform-google-managed-instance-group.git?ref=terraform_0.12"
 
   name = (var.coordinator_group_name != "" ? var.coordinator_group_name : "presto-${var.environment_name}-coordinators")
 
@@ -105,6 +97,7 @@ module "coordinator_group" {
   # See: https://github.com/prestosql/presto/issues/391 
   size = 1
 
+  project    = var.project
   region     = var.region
   zone       = var.zone
   network    = var.network
@@ -152,12 +145,13 @@ module "worker_group" {
   # version = "1.1.15"
   # Using Fork as original is incompatible with the Google >= 2.0 provider
   # - https://github.com/GoogleCloudPlatform/terraform-google-managed-instance-group/pull/39
-  source = "git::https://github.com/joshuamkite/terraform-google-managed-instance-group.git?ref=feature/repair_module_and_autoscaling_example"
+  source = "git::https://github.com/rchukh/terraform-google-managed-instance-group.git?ref=terraform_0.12"
 
   name = (var.worker_group_name != "" ? var.worker_group_name : "presto-${var.environment_name}-workers")
 
   size = var.worker_group_size
 
+  project    = var.project
   region     = var.region
   zone       = var.zone
   network    = var.network

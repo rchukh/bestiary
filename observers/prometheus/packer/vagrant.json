@@ -1,0 +1,36 @@
+{
+  "variables": {
+    "postgresql_password": "postgres"
+  },
+  "provisioners" : [
+    {
+      "type": "file",
+      "source": "../../../keepers/timescaledb/packer/files/pg_prometheus.patch",
+      "destination": "/tmp/pg_prometheus.patch"
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "POSTGRESQL_PASSWORD={{user `postgresql_password`}}"
+      ],
+      "scripts": [
+          "../../../keepers/timescaledb/packer/mutation/timescaledb.sh",
+          "mutation/prometheus.sh",
+          "mutation/prometheus-postgresql-adapter.sh"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "vagrant",
+      "communicator": "ssh",
+      "source_path": "rchukh/bestiary-centos",
+      "box_version": "2.0.0",
+      "provider": "virtualbox",
+      "box_name": "bestiary-prometheus-{{timestamp}}",
+      "skip_add": true,
+      "skip_package": true,
+      "teardown_method": "destroy"
+    }
+  ]
+}

@@ -6,8 +6,7 @@
         "mutation/base.sh",
         "mutation/commons/kernel.sh",
         "mutation/commons/monit.sh",
-        "mutation/observers/prometheus/node_exporter.sh",
-        "mutation/runtimes/java/corretto_8.sh"
+        "mutation/observers/prometheus/node_exporter.sh"
       ]
     }
   ],
@@ -16,13 +15,11 @@
       "type": "vagrant",
       "communicator": "ssh",
       "source_path": "centos/7",
-      "box_version": "1901.01",
+      "box_version": "1902.01",
       "provider": "virtualbox",
-      "ssh_username": "vagrant",
-      "ssh_port": 22,
       "box_name": "bestiary-centos7-{{timestamp}}",
       "skip_add": true,
-      "skip_package": true,
+      "skip_package": false,
       "teardown_method": "destroy"
     }
   ]

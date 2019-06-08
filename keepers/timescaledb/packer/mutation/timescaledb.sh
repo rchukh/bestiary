@@ -97,8 +97,8 @@ sudo -u postgres psql -c "CREATE ROLE prometheus WITH LOGIN PASSWORD '$POSTGRESQ
 sudo -u postgres psql -c "CREATE DATABASE prometheus WITH OWNER prometheus;"
 sudo -u postgres psql -d "prometheus" -c "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;"
 sudo -u postgres psql -d "prometheus" -c "CREATE EXTENSION IF NOT EXISTS pg_prometheus;"
-# NOTE: Ignore message "ERROR:  permission denied for schema prometheus"
-# See below for details on why.
+# !NOTE: Ignore message "ERROR:  permission denied for schema prometheus"
+# !See below for details on why.
 export PGPASSWORD="$POSTGRESQL_PASSWORD"; psql -h localhost -U prometheus -c "SELECT create_prometheus_table('metrics',use_timescaledb=>true);"
 # sudo -u postgres psql -d "prometheus" -c "SELECT create_prometheus_table('metrics',use_timescaledb=>true);"
 sudo -u postgres psql -d "prometheus" -c "GRANT ALL ON SCHEMA prometheus TO prometheus;"
@@ -107,8 +107,6 @@ sudo -u postgres psql -d "prometheus" -c "GRANT ALL PRIVILEGES ON ALL TABLES IN 
 # Since it creates it with default permissions, we need to set it to the current user (see above)
 # and run it again, to complete the init procedure
 export PGPASSWORD="$POSTGRESQL_PASSWORD"; psql -h localhost -U prometheus -c "SELECT create_prometheus_table('metrics',use_timescaledb=>true);"
-
-# TODO: Add prometheus-postgresql-adapter
 
 # Clean up tmp files
 sudo rm -rf $TMP_DIR

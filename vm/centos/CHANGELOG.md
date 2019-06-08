@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Unreleased
+
+Updated:
+
+- Node Exporter to 0.18.1
+
 ## [2.0.0](https://app.vagrantup.com/rchukh/boxes/bestiary-centos/versions/2.0.0)
 
 Breaking Changes:

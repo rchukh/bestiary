@@ -8,10 +8,6 @@
       {
         "type": "shell",
         "scripts": [
-            "../../../vm/centos/mutation/base.sh",
-            "../../../vm/centos/mutation/commons/kernel.sh",
-            "../../../vm/centos/mutation/commons/monit.sh",
-            "../../../vm/centos/mutation/observers/prometheus/node_exporter.sh",
             "../../../vm/centos/mutation/runtimes/java/corretto_8.sh",
             "mutation/presto.sh",
             "mutation/presto/jmx_agent.sh",
@@ -28,7 +24,7 @@
         "use_internal_ip": false,
         "ssh_username": "packer",
 
-        "source_image_family": "centos-7",
+        "source_image_family": "bestiary-linux",
 
         "image_name" : "bestiary-prestosql-{{timestamp}}",
         "image_family" : "bestiary-executors",

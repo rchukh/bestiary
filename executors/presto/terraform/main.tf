@@ -120,6 +120,15 @@ module "coordinator_group" {
   ]
 
   wait_for_instances = true
+  update_policy = {
+    type                    = "PROACTIVE"
+    minimal_action          = "REPLACE"
+    max_surge_fixed         = 1
+    max_surge_percent       = null
+    max_unavailable_fixed   = 1
+    max_unavailable_percent = null
+    min_ready_sec           = null
+  }
 }
 
 data "template_file" "worker_config" {
@@ -169,5 +178,15 @@ module "worker_group" {
   http_health_check      = false
   target_pools           = []
   target_tags            = ["allow-presto-${var.environment_name}"]
-  wait_for_instances     = true
+
+  wait_for_instances = true
+  update_policy = {
+    type                    = "PROACTIVE"
+    minimal_action          = "REPLACE"
+    max_surge_fixed         = 1
+    max_surge_percent       = null
+    max_unavailable_fixed   = 1
+    max_unavailable_percent = null
+    min_ready_sec           = null
+  }
 }

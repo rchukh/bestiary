@@ -50,7 +50,7 @@ variable "coordinator_group_lb_schema" {
 
 variable "coordinator_image" {
   description = "Presto Image to use for coordinator"
-  default     = "bestiary-prestosql-1552046971"
+  default     = "bestiary-prestosql-1559998233"
 }
 
 variable "coordinator_type" {
@@ -88,7 +88,7 @@ variable "worker_group_size" {
 
 variable "worker_image" {
   description = "Presto Image to use for worker"
-  default     = "bestiary-prestosql-1552046971"
+  default     = "bestiary-prestosql-1559998233"
 }
 
 variable "worker_type" {

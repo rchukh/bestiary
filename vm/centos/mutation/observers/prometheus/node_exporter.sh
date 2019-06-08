@@ -7,7 +7,7 @@
 ##
 TMP_DIR=/tmp/$(uuidgen -t)
 
-NODE_EXPORTER_VERSION=0.17.0
+NODE_EXPORTER_VERSION=0.18.1
 NODE_EXPORTER_DIST=node_exporter-$NODE_EXPORTER_VERSION.linux-amd64.tar.gz
 
 # Download and unpack node_exporter

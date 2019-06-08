@@ -76,6 +76,28 @@ variable "coordinator_startup_script" {
   default     = ""
 }
 
+variable "coordinator_update_policy" {
+  description = "The upgrade policy to apply when the instance template changes."
+  type = object({
+    type                    = string
+    minimal_action          = string
+    max_surge_fixed         = number
+    max_surge_percent       = number
+    max_unavailable_fixed   = number
+    max_unavailable_percent = number
+    min_ready_sec           = number
+  })
+  default = {
+    type                    = "PROACTIVE"
+    minimal_action          = "REPLACE"
+    max_surge_fixed         = 1
+    max_surge_percent       = null
+    max_unavailable_fixed   = 1
+    max_unavailable_percent = null
+    min_ready_sec           = null
+  }
+}
+
 variable "worker_group_name" {
   description = "Worker Instance Group Name"
   default     = ""
@@ -112,6 +134,28 @@ variable "worker_config" {
 variable "worker_startup_script" {
   description = "Worker startup script override"
   default     = ""
+}
+
+variable "worker_update_policy" {
+  description = "The upgrade policy to apply when the instance template changes."
+  type = object({
+    type                    = string
+    minimal_action          = string
+    max_surge_fixed         = number
+    max_surge_percent       = number
+    max_unavailable_fixed   = number
+    max_unavailable_percent = number
+    min_ready_sec           = number
+  })
+  default = {
+    type                    = "PROACTIVE"
+    minimal_action          = "REPLACE"
+    max_surge_fixed         = 1
+    max_surge_percent       = null
+    max_unavailable_fixed   = 1
+    max_unavailable_percent = null
+    min_ready_sec           = null
+  }
 }
 
 variable "service_account_scopes" {

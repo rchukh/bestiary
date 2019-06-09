@@ -1,0 +1,31 @@
+{
+    "variables": {
+      "gcp_account_file": "{{env `GOOGLE_CLOUD_KEYFILE_JSON`}}",
+      "gcp_project_id": "",
+      "gcp_zone": "europe-west1-d"
+    },
+    "provisioners" : [
+      {
+        "type": "shell",
+        "scripts": [
+            "mutation/grafana.sh"
+        ]
+      }
+    ],
+    "builders": [
+      {
+        "type": "googlecompute",
+        "account_file": "{{user `gcp_account_file`}}",
+        "project_id": "{{user `gcp_project_id`}}",
+        "zone": "{{user `gcp_zone`}}",
+        "use_internal_ip": false,
+        "ssh_username": "packer",
+
+        "source_image_family": "bestiary-linux",
+
+        "image_name" : "bestiary-grafana-{{timestamp}}",
+        "image_family" : "bestiary-observers",
+        "image_description" : "Bestiary Grafana - Build {{timestamp}}"
+      }
+    ]
+  }

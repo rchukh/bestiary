@@ -1,0 +1,23 @@
+{
+  "provisioners" : [
+    {
+      "type": "shell",
+      "scripts": [
+          "mutation/grafana.sh"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "vagrant",
+      "communicator": "ssh",
+      "source_path": "rchukh/bestiary-centos",
+      "box_version": "2.0.0",
+      "provider": "virtualbox",
+      "box_name": "bestiary-grafana-{{timestamp}}",
+      "skip_add": true,
+      "skip_package": true,
+      "teardown_method": "destroy"
+    }
+  ]
+}

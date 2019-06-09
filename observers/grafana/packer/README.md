@@ -1,16 +1,13 @@
-# Presto Packer configuration
+# Grafana Packer configuration
 
 ## Overview
 
-Packer configuration for [PrestoSQL](https://prestosql.io).
+Packer configuration for [Grafana](https://grafana.com/).
 
 ## Configurations
 
 - [Bestiary Base Linux VM](https://github.com/rchukh/bestiary/tree/master/vm/centos)
-- [Presto 305](https://prestosql.io/docs/current/release/release-305.html)
-- Monit over SysVinit that comes with Presto
-- [Amazon Corretto 1.8](https://aws.amazon.com/corretto/) as JVM
-- Prometheus JMX Exporter (Port 8081)
+- [Grafana 6.2.2](https://github.com/grafana/grafana/blob/master/CHANGELOG.md#622-2019-06-05)
 
 ## Variables
 

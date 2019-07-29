@@ -7,7 +7,7 @@
 ##
 TMP_DIR=/tmp/$(uuidgen -t)
 
-PRESTOSQL_VERSION=305
+PRESTOSQL_VERSION=316
 PRESTOSQL_DIST=presto-server-rpm-$PRESTOSQL_VERSION.rpm
 
 # Download and install

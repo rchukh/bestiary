@@ -8,7 +8,7 @@
 ##
 TMP_DIR=/tmp/bestiary/$(uuidgen -t)
 
-PROM_VERSION=2.9.2
+PROM_VERSION=2.11.1
 PROM_DIST=prometheus-$PROM_VERSION.linux-amd64.tar.gz
 PROM_USER=prometheus
 PROM_DESTINATION=/opt/prometheus/server

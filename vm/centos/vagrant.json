@@ -15,7 +15,7 @@
       "type": "vagrant",
       "communicator": "ssh",
       "source_path": "centos/7",
-      "box_version": "1902.01",
+      "box_version": "1905.01",
       "provider": "virtualbox",
       "box_name": "bestiary-centos7-{{timestamp}}",
       "skip_add": true,

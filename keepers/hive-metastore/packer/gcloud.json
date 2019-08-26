@@ -1,0 +1,33 @@
+{
+  "variables": {
+    "gcp_account_file": "{{env `GOOGLE_CLOUD_KEYFILE_JSON`}}",
+    "gcp_project_id": "",
+    "gcp_zone": "europe-west1-d"
+  },
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "../../../vm/centos/mutation/cloud/gcp/cloud_sql_proxy.sh",
+        "../../../vm/centos/mutation/runtimes/java/corretto_8.sh",
+        "mutation/hive-metastore.sh"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "googlecompute",
+      "account_file": "{{user `gcp_account_file`}}",
+      "project_id": "{{user `gcp_project_id`}}",
+      "zone": "{{user `gcp_zone`}}",
+      "use_internal_ip": false,
+      "ssh_username": "packer",
+
+      "source_image_family": "bestiary-linux",
+
+      "image_name" : "bestiary-hive-metastore-{{timestamp}}",
+      "image_family" : "bestiary-keepers",
+      "image_description" : "Bestiary Hive Metastore - Build {{timestamp}}"
+    }
+  ]
+}

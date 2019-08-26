@@ -25,7 +25,7 @@ variable "subnetwork_range" {
 }
 
 variable "environment_name" {
-  description = "Environment Name (used in WEB UI)"
+  description = "Environment Name"
 }
 
 variable "gcs_bucket" {
@@ -181,5 +181,3 @@ variable "service_account_scopes" {
     "https://www.googleapis.com/auth/devstorage.full_control",
   ]
 }
-
-

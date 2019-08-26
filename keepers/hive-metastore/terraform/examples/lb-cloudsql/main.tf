@@ -122,6 +122,4 @@ module "hms" {
 
   # NOTE: Environment name is used in GCP resources name (e.g. cannot contain some symbols _)
   environment_name = "lb-cloudsql"
-
 }
-

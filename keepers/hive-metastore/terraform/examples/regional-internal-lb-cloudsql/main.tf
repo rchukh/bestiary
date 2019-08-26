@@ -152,4 +152,3 @@ module "hms" {
     "europe-west1-d",
   ]
 }
-

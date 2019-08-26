@@ -6,7 +6,8 @@
         "../../../vm/centos/mutation/runtimes/java/corretto_8.sh",
         "mutation/presto.sh",
         "mutation/presto/jmx_agent.sh",
-        "mutation/presto/monit.sh"
+        "mutation/presto/monit.sh",
+        "mutation/presto/presto-querylog.sh"
       ]
     }
   ],

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 
 # Configure monit for PrestoSQL
 sudo tee /etc/monit.d/presto > /dev/null <<EOF

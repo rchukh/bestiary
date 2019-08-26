@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 ##
 # Installs Prometheus JMX Agent - https://github.com/prometheus/jmx_exporter
 #

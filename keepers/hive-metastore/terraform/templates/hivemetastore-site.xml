@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<configuration>
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:mysql://${METASTORE_DB_HOST}:${METASTORE_DB_PORT}/${METASTORE_DB_NAME}</value>
+        <description>JDBC connection string</description>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>com.mysql.cj.jdbc.Driver</value>
+        <description>JDBC Driver class</description>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>${METASTORE_DB_USER}</value>
+        <description>Metastore database user name</description>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>${METASTORE_DB_PASSWORD}</value>
+        <description>Metastore database password</description>
+    </property>
+
+    <property>
+        <name>hive.metastore.metrics.enabled</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>${METASTORE_WAREHOUSE_DIR}</value>
+    </property>
+</configuration>

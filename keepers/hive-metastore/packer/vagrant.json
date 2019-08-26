@@ -1,0 +1,25 @@
+{
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "../../../vm/centos/mutation/cloud/gcp/cloud_sql_proxy.sh",
+        "../../../vm/centos/mutation/runtimes/java/corretto_8.sh",
+        "mutation/hive-metastore.sh"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "vagrant",
+      "communicator": "ssh",
+      "source_path": "rchukh/bestiary-centos",
+      "box_version": "2.0.0",
+      "provider": "virtualbox",
+      "box_name": "bestiary-hive-metastore-{{timestamp}}",
+      "skip_add": true,
+      "skip_package": true,
+      "teardown_method": "destroy"
+    }
+  ]
+}

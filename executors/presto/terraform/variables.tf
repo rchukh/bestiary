@@ -39,13 +39,13 @@ variable "http_port" {
 
 variable "jmx_port" {
   description = "JMX Exporter Port"
-  type        = "string"
+  type        = string
   default     = "8081"
 }
 
 variable "subnet_ports" {
   description = "Additional Ports to expose in the subnet."
-  type        = "list"
+  type        = list
   default     = [
     # Node Exporter
     "9100"
@@ -54,7 +54,7 @@ variable "subnet_ports" {
 
 variable "additional_hosts" {
   description = "List of hosts to add to /etc/hosts"
-  type        = "list"
+  type        = list
   default     = []
 }
 
@@ -75,7 +75,7 @@ variable "coordinator_group_lb_schema" {
 
 variable "coordinator_image" {
   description = "Presto Image to use for coordinator"
-  default     = "bestiary-prestosql-1559998233"
+  default     = "bestiary-prestosql-1575806468"
 }
 
 variable "coordinator_type" {
@@ -135,7 +135,7 @@ variable "worker_group_size" {
 
 variable "worker_image" {
   description = "Presto Image to use for worker"
-  default     = "bestiary-prestosql-1559998233"
+  default     = "bestiary-prestosql-1575806468"
 }
 
 variable "worker_type" {
@@ -185,7 +185,7 @@ variable "worker_update_policy" {
 
 variable "service_account_scopes" {
   description = "List of scopes for the instance template service account"
-  type        = "list"
+  type        = list
 
   default = [
     "https://www.googleapis.com/auth/compute",

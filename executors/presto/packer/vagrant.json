@@ -3,7 +3,7 @@
     {
       "type": "shell",
       "scripts": [
-        "../../../vm/centos/mutation/runtimes/java/corretto_8.sh",
+        "../../../vm/centos/mutation/runtimes/java/corretto_11.sh",
         "mutation/presto.sh",
         "mutation/presto/jmx_agent.sh",
         "mutation/presto/monit.sh",

@@ -6,14 +6,22 @@ provider "google-beta" {
   zone    = var.zone
 }
 
+provider "google" {
+  version = "~> 2.12.0"
+
+  project = var.project
+  region  = var.region
+  zone    = var.zone
+}
+
 resource "google_compute_network" "presto" {
-  provider                = "google-beta"
+  provider                = google-beta
   name                    = "bestiary-vpc"
   auto_create_subnetworks = "false"
 }
 
 resource "google_compute_subnetwork" "presto" {
-  provider      = "google-beta"
+  provider      = google-beta
   name          = "bestiary-default"
   network       = google_compute_network.presto.self_link
   region        = var.region

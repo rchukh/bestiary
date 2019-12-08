@@ -10,10 +10,10 @@ TMP_DIR=/tmp/bestiary/$(uuidgen -t)
 sudo mkdir -p $TMP_DIR
 
 PRESTO_CONF_DIR=/etc/presto
-PRESTO_PLUGIN_DIR=/usr/lib/presto/lib/plugin
+PRESTO_PLUGIN_DIR=/usr/lib/presto/plugin
 PRESTO_LISTENER_CONF=$PRESTO_CONF_DIR/event-listener.properties
 
-QUERYLOG_VERSION=0.2.1
+QUERYLOG_VERSION="0.3"
 QUERYLOG_DIST="presto-querylog-$QUERYLOG_VERSION-dist.zip"
 QUERYLOG_CONF=$PRESTO_CONF_DIR/presto-querylog-log4j2.xml
 QUERYLOG_PLUGIN_DIR=$PRESTO_PLUGIN_DIR/presto-querylog

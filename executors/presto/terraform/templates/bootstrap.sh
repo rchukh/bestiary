@@ -26,7 +26,7 @@ sudo cat /opt/bestiary/presto/additional_hosts | sudo tee -a /etc/hosts
 sudo mv /etc/presto/config.properties /etc/presto/config.properties.bak
 sudo cp /opt/bestiary/presto/config.properties /etc/presto/config.properties
 sudo mkdir -p /etc/presto/catalog
-sudo chmod -R 0750 /etc/presto/catalog
+sudo chmod -R 0755 /etc/presto/catalog
 sudo cp -R /opt/bestiary/presto/catalog/* /etc/presto/catalog
 sudo chmod -R 0644 /etc/presto/catalog/*.properties
 sudo chmod -R 0644 /etc/presto/*.properties

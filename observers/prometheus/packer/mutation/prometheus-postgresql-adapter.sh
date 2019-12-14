@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 ##
 # Installs Prometheus remote storage adapter for PostgreSQL - https://github.com/timescale/prometheus-postgresql-adapter
 #
@@ -10,7 +10,7 @@
 ##
 TMP_DIR=/tmp/bestiary/$(uuidgen -t)
 
-PROM_PG_VERSION=0.4.1
+PROM_PG_VERSION=0.6.0
 PROM_PG_DIST=prometheus-postgresql-adapter-$PROM_PG_VERSION-linux-amd64.tar.gz
 
 PROM_PG_USER=prometheus_pg
@@ -18,7 +18,7 @@ PROM_PG_DESTINATION=/opt/prometheus/postgresql-adapter
 
 # Download and install
 sudo mkdir -p $TMP_DIR
-sudo curl -L -o $TMP_DIR/$PROM_PG_DIST https://github.com/timescale/prometheus-postgresql-adapter/releases/download/$PROM_PG_VERSION/$PROM_PG_DIST
+sudo curl -L -o $TMP_DIR/$PROM_PG_DIST https://github.com/timescale/prometheus-postgresql-adapter/releases/download/v$PROM_PG_VERSION/$PROM_PG_DIST
 sudo mkdir -p $PROM_PG_DESTINATION
 sudo tar -xzf $TMP_DIR/$PROM_PG_DIST -C $PROM_PG_DESTINATION
 

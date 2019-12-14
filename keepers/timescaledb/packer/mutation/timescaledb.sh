@@ -3,7 +3,7 @@
 # Installs:
 # - PostgreSQL 11
 # - TimescaleDB extension - https://github.com/timescale/timescaledb
-# - Prometheus Remote Storage extension 0.2.1 - https://github.com/timescale/pg_prometheus
+# - Prometheus Remote Storage extension 0.2.2 - https://github.com/timescale/pg_prometheus
 #
 # TODO:
 # - Separate PostgreSQL, TimescaleDB and PgPrometheus into separate mutations
@@ -56,7 +56,7 @@ sudo sed -i.bak \
          /var/lib/pgsql/11/data/pg_hba.conf
 
 # Build Prometheus Remote Storage
-PG_PROM_VERSION=0.2.1
+PG_PROM_VERSION=0.2.2
 PG_PROM_DIST=$PG_PROM_VERSION.tar.gz
 PG_PROM_BUILD_DIR=$TMP_DIR/pg_prometheus
 sudo curl --create-dirs -L -o $TMP_DIR/$PG_PROM_DIST https://github.com/timescale/pg_prometheus/archive/$PG_PROM_DIST
@@ -70,14 +70,7 @@ sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch
 sudo yum -y --enablerepo=epel install llvm5.0 
 sudo yum -y install devtoolset-7 llvm-toolset-7
 # END Workaround
-# START Patch pg_prometheus to work with PostgreSQL 11
-# Changes taken from https://github.com/timescale/pg_prometheus/pull/36
-# Packer already uploaded /tmp/pg_prometheus.patch
-sudo yum -y install patch
-cd $TMP_DIR
-sudo cp /tmp/pg_prometheus.patch $TMP_DIR/pg_prometheus.11.patch
-sudo patch -p0 -i pg_prometheus.11.patch
-# END Patch pg_prometheus to work with PostgreSQL 11
+
 # Build pg_prometheus
 cd $PG_PROM_BUILD_DIR
 sudo make PG_CONFIG=/usr/pgsql-11/bin/pg_config

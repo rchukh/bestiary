@@ -5,7 +5,7 @@
 Updated:
 
 - Base image updated to Centos 7 [v1905.1](https://app.vagrantup.com/centos/boxes/7/versions/1905.1)
-- [Mainline branch](https://www.kernel.org/) Linux Kernel - 5.2.5
+- [Mainline branch](https://www.kernel.org/) Linux Kernel - 5.4.3
 - Prometheus [Node Exporter 0.18.1](https://github.com/prometheus/node_exporter/releases/tag/v0.18.1)
 
 ## [2.0.0](https://app.vagrantup.com/rchukh/boxes/bestiary-centos/versions/2.0.0)

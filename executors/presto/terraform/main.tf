@@ -2,10 +2,22 @@ terraform {
   required_version = "~> 0.12"
 }
 
-resource "google_compute_http_health_check" "presto" {
-  name = "presto-${var.environment_name}-hc"
+resource "google_project_service" "storage-component" {
+  project                    = var.project
+  service                    = "storage-component.googleapis.com"
+  disable_dependent_services = false
+  disable_on_destroy         = false
+}
 
-  project      = var.project
+resource "google_compute_http_health_check" "presto" {
+  name    = "presto-${var.environment_name}-hc"
+  project = var.project
+
+  check_interval_sec  = "10"
+  timeout_sec         = "10"
+  healthy_threshold   = "1"
+  unhealthy_threshold = "5"
+
   port         = var.http_port
   request_path = "/v1/status"
 }
@@ -61,6 +73,30 @@ resource "google_compute_firewall" "presto" {
   target_tags   = ["allow-presto-${var.environment_name}"]
 }
 
+# Allow inside of subnet
+resource "google_compute_firewall" "presto_metrics" {
+  name = "presto-${var.environment_name}-metrics"
+
+  project = var.project
+  network = var.network
+
+  allow {
+    protocol = "tcp"
+    ports    = concat([var.jmx_port], var.subnet_ports)
+  }
+
+  source_ranges = [var.subnetwork_range]
+  target_tags   = ["allow-presto-${var.environment_name}-metrics"]
+}
+
+data "template_file" "additional_hosts" {
+  template = file(format("%s/templates/additional_hosts", path.module))
+
+  vars = {
+    HOSTS = join("\n", var.additional_hosts)
+  }
+}
+
 data "template_file" "coordinator_config" {
   template = file(format("%s/templates/coordinator.config.tpl", path.module))
 
@@ -71,17 +107,45 @@ data "template_file" "coordinator_config" {
   }
 }
 
-data "template_file" "coordinator-startup-script" {
-  template = file(format("%s/templates/startup.sh.tpl", path.module))
+data "template_file" "coordinator_startup_script" {
+  template = file(format("%s/templates/bootstrap.sh", path.module))
 
   vars = {
-    ENV_NAME = var.environment_name
-
-    PRESTO_CONFIG = (
-      var.coordinator_config != "" ? var.coordinator_config
-      : data.template_file.coordinator_config.rendered
-    )
+    ENV_NAME          = var.environment_name
+    GCS_CONFIG_BUCKET = google_storage_bucket_object.coordinator_config.bucket
+    GCS_CONFIG_OBJECT = google_storage_bucket_object.coordinator_config.name
   }
+}
+
+data "archive_file" "coordinator_config" {
+  type        = "zip"
+  output_path = "${path.module}/dist/coordinator_config_${var.environment_name}.zip"
+
+  source {
+    content  = data.template_file.additional_hosts.rendered
+    filename = "additional_hosts"
+  }
+  source {
+    content  = var.coordinator_config != "" ? var.coordinator_config : data.template_file.coordinator_config.rendered
+    filename = "config.properties"
+  }
+
+  dynamic "source" {
+    for_each = [for catalog in var.catalogs: {
+      file_name        = catalog.file_name
+      rendered_content = catalog.content
+    }]
+    content {
+      content  = source.value.rendered_content
+      filename = format("catalog/%s", source.value.file_name)
+    }
+  }
+}
+
+resource "google_storage_bucket_object" "coordinator_config" {
+  name   = "presto_${var.environment_name}_${data.archive_file.coordinator_config.output_md5}.zip"
+  bucket = var.gcs_bucket
+  source = data.archive_file.coordinator_config.output_path
 }
 
 module "coordinator_group" {
@@ -107,17 +171,18 @@ module "coordinator_group" {
   machine_type  = var.coordinator_type
   disk_type     = var.coordinator_disk_type
 
-  startup_script = (var.coordinator_startup_script != "" ? var.coordinator_startup_script : data.template_file.coordinator-startup-script.rendered)
+  startup_script = (var.coordinator_startup_script != "" ? var.coordinator_startup_script : data.template_file.coordinator_startup_script.rendered)
 
   service_account_scopes = var.service_account_scopes
   service_port           = var.http_port
   service_port_name      = "http"
   http_health_check      = false
   target_pools           = [google_compute_target_pool.presto.self_link]
-  target_tags = [
-    "allow-presto-${var.environment_name}-coordinator",
-    "allow-presto-${var.environment_name}"
-  ]
+  target_tags = setunion(
+    google_compute_firewall.presto-lb-fw.target_tags,
+    google_compute_firewall.presto.target_tags,
+    google_compute_firewall.presto_metrics.target_tags
+  )
 
   wait_for_instances = true
   update_policy      = var.coordinator_update_policy
@@ -132,13 +197,44 @@ data "template_file" "worker_config" {
   }
 }
 
-data "template_file" "worker-startup-script" {
-  template = file(format("%s/templates/startup.sh.tpl", path.module))
+data "template_file" "worker_startup_script" {
+  template = file(format("%s/templates/bootstrap.sh", path.module))
 
   vars = {
-    ENV_NAME      = var.environment_name
-    PRESTO_CONFIG = (var.worker_config != "" ? var.worker_config : data.template_file.worker_config.rendered)
+    ENV_NAME          = var.environment_name
+    GCS_CONFIG_BUCKET = google_storage_bucket_object.worker_config.bucket
+    GCS_CONFIG_OBJECT = google_storage_bucket_object.worker_config.name
   }
+}
+
+data "archive_file" "worker_config" {
+  type        = "zip"
+  output_path = "${path.module}/dist/worker_config_${var.environment_name}.zip"
+
+  source {
+    content  = data.template_file.additional_hosts.rendered
+    filename = "additional_hosts"
+  }
+  source {
+    content  = var.worker_config != "" ? var.worker_config : data.template_file.worker_config.rendered
+    filename = "config.properties"
+  }
+  dynamic "source" {
+    for_each = [for catalog in var.catalogs: {
+      file_name        = catalog.file_name
+      rendered_content = catalog.content
+    }]
+    content {
+      content  = source.value.rendered_content
+      filename = format("catalog/%s", source.value.file_name)
+    }
+  }
+}
+
+resource "google_storage_bucket_object" "worker_config" {
+  name   = "presto_${var.environment_name}_${data.archive_file.worker_config.output_md5}.zip"
+  bucket = var.gcs_bucket
+  source = data.archive_file.worker_config.output_path
 }
 
 module "worker_group" {
@@ -162,14 +258,17 @@ module "worker_group" {
   machine_type  = var.worker_type
   disk_type     = var.worker_disk_type
 
-  startup_script = (var.worker_startup_script != "" ? var.worker_startup_script : data.template_file.worker-startup-script.rendered)
+  startup_script = (var.worker_startup_script != "" ? var.worker_startup_script : data.template_file.worker_startup_script.rendered)
 
   service_account_scopes = var.service_account_scopes
   service_port           = var.http_port
   service_port_name      = "http"
   http_health_check      = false
   target_pools           = []
-  target_tags            = ["allow-presto-${var.environment_name}"]
+  target_tags = setunion(
+    google_compute_firewall.presto.target_tags,
+    google_compute_firewall.presto_metrics.target_tags
+  )
 
   wait_for_instances = true
   update_policy      = var.worker_update_policy

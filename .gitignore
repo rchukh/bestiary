@@ -12,3 +12,4 @@ account.json
 *.backup
 packer_cache
 output-vagrant
+dist

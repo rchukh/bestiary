@@ -4,7 +4,7 @@
 ##
 TMP_DIR=/tmp/bestiary/$(uuidgen -t)
 
-VERSION=6.2.2-1
+VERSION=6.5.2-1
 DIST=grafana-$VERSION.x86_64.rpm
 
 # Download and install

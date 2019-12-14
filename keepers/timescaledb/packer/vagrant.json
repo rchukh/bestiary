@@ -4,11 +4,6 @@
   },
   "provisioners" : [
     {
-      "type": "file",
-      "source": "files/pg_prometheus.patch",
-      "destination": "/tmp/pg_prometheus.patch"
-    },
-    {
       "type": "shell",
       "environment_vars": [
         "POSTGRESQL_PASSWORD={{user `postgresql_password`}}"

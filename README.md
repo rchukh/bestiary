@@ -2,5 +2,5 @@
 
 ## Requirements
 
-- Packer 1.4.1
+- Packer 1.4.2
 - Terraform 0.12

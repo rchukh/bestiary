@@ -7,12 +7,12 @@
 ##
 TMP_DIR=/tmp/$(uuidgen -t)
 
-CORRETTO_VERSION=1.8.0_212.b04-2
+CORRETTO_VERSION=1.8.0_222.b10-1
 CORRETTO_DIST=java-1.8.0-amazon-corretto-devel-$CORRETTO_VERSION.x86_64.rpm
 
 # Download and install Amazon Corretto
 sudo mkdir -p $TMP_DIR
-sudo wget https://d3pxv6yz143wms.cloudfront.net/8.212.04.2/$CORRETTO_DIST -O $TMP_DIR/$CORRETTO_DIST
+sudo curl -L -o $TMP_DIR/$CORRETTO_DIST https://d3pxv6yz143wms.cloudfront.net/8.222.10.1/$CORRETTO_DIST
 sudo yum -y localinstall $TMP_DIR/$CORRETTO_DIST
 
 # TODO: Check if this might be needed.

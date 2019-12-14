@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 ##
 # Installs Prometheus JMX Agent - https://github.com/prometheus/jmx_exporter
 #
@@ -9,7 +9,7 @@
 PRESTOSQL_CONF=/etc/presto
 PRESTOSQL_JVM_CONF=$PRESTOSQL_CONF/jvm.config
 
-PROMETHEUS_JAVAAGENT_VERSION=0.11.0
+PROMETHEUS_JAVAAGENT_VERSION=0.12.0
 PROMETHEUS_JAVAAGENT=jmx_prometheus_javaagent-$PROMETHEUS_JAVAAGENT_VERSION.jar
 PROMETHEUS_JAVAAGENT_DIR=/opt/prometheus/jmx_agent
 PROMETHEUS_JAVAAGENT_PORT=8081

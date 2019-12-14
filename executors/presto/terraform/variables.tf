@@ -28,9 +28,34 @@ variable "environment_name" {
   description = "Presto Environment Name (used in WEB UI)"
 }
 
+variable "gcs_bucket" {
+  description = "Bucket name to store configurations."
+}
+
 variable "http_port" {
   description = "Presto HTTP Port. Presto uses HTTP for all communication, internal and external."
   default     = "8080"
+}
+
+variable "jmx_port" {
+  description = "JMX Exporter Port"
+  type        = string
+  default     = "8081"
+}
+
+variable "subnet_ports" {
+  description = "Additional Ports to expose in the subnet."
+  type        = list
+  default     = [
+    # Node Exporter
+    "9100"
+  ]
+}
+
+variable "additional_hosts" {
+  description = "List of hosts to add to /etc/hosts"
+  type        = list
+  default     = []
 }
 
 variable "coordinator_group_name" {
@@ -50,7 +75,7 @@ variable "coordinator_group_lb_schema" {
 
 variable "coordinator_image" {
   description = "Presto Image to use for coordinator"
-  default     = "bestiary-prestosql-1559998233"
+  default     = "bestiary-prestosql-1575806468"
 }
 
 variable "coordinator_type" {
@@ -78,7 +103,7 @@ variable "coordinator_startup_script" {
 
 variable "coordinator_update_policy" {
   description = "The upgrade policy to apply when the instance template changes."
-  type = object({
+  type        = object({
     type                    = string
     minimal_action          = string
     max_surge_fixed         = number
@@ -87,7 +112,7 @@ variable "coordinator_update_policy" {
     max_unavailable_percent = number
     min_ready_sec           = number
   })
-  default = {
+  default     = {
     type                    = "PROACTIVE"
     minimal_action          = "REPLACE"
     max_surge_fixed         = 1
@@ -110,7 +135,7 @@ variable "worker_group_size" {
 
 variable "worker_image" {
   description = "Presto Image to use for worker"
-  default     = "bestiary-prestosql-1559998233"
+  default     = "bestiary-prestosql-1575806468"
 }
 
 variable "worker_type" {
@@ -138,7 +163,7 @@ variable "worker_startup_script" {
 
 variable "worker_update_policy" {
   description = "The upgrade policy to apply when the instance template changes."
-  type = object({
+  type        = object({
     type                    = string
     minimal_action          = string
     max_surge_fixed         = number
@@ -147,7 +172,7 @@ variable "worker_update_policy" {
     max_unavailable_percent = number
     min_ready_sec           = number
   })
-  default = {
+  default     = {
     type                    = "PROACTIVE"
     minimal_action          = "REPLACE"
     max_surge_fixed         = 1
@@ -160,7 +185,7 @@ variable "worker_update_policy" {
 
 variable "service_account_scopes" {
   description = "List of scopes for the instance template service account"
-  type        = "list"
+  type        = list
 
   default = [
     "https://www.googleapis.com/auth/compute",
@@ -168,4 +193,13 @@ variable "service_account_scopes" {
     "https://www.googleapis.com/auth/monitoring.write",
     "https://www.googleapis.com/auth/devstorage.full_control",
   ]
+}
+
+variable "catalogs" {
+  description = "Presto catalogs"
+  type        = list(object({
+    file_name = string
+    content   = string
+  }))
+  default     = []
 }

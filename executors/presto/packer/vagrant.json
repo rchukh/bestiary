@@ -1,4 +1,9 @@
 {
+  "variables": {
+    "fluentd_host": "127.0.0.1",
+    "fluentd_port": "54321",
+    "fluentd_secret": "secret"
+  },
   "provisioners" : [
     {
       "type": "shell",

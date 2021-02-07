@@ -21,11 +21,11 @@ variable "subnetwork" {
 }
 
 variable "subnetwork_range" {
-  description = "Presto Cluster Subnetwork Range (to allow coordinator<->worker communications)"
+  description = "Trino Cluster Subnetwork Range (to allow coordinator<->worker communications)"
 }
 
 variable "environment_name" {
-  description = "Presto Environment Name (used in WEB UI)"
+  description = "Trino Environment Name (used in WEB UI)"
 }
 
 variable "gcs_bucket" {
@@ -33,7 +33,7 @@ variable "gcs_bucket" {
 }
 
 variable "http_port" {
-  description = "Presto HTTP Port. Presto uses HTTP for all communication, internal and external."
+  description = "Trino HTTP Port. Trino uses HTTP for all communication, internal and external."
   default     = "8080"
 }
 
@@ -74,8 +74,8 @@ variable "coordinator_group_lb_schema" {
 }
 
 variable "coordinator_image" {
-  description = "Presto Image to use for coordinator"
-  default     = "bestiary-prestosql-1575806468"
+  description = "Trino Image to use for coordinator"
+  default     = "bestiary-trino-1575806468"
 }
 
 variable "coordinator_type" {
@@ -134,8 +134,8 @@ variable "worker_group_size" {
 }
 
 variable "worker_image" {
-  description = "Presto Image to use for worker"
-  default     = "bestiary-prestosql-1575806468"
+  description = "Trino Image to use for worker"
+  default     = "bestiary-trino-1575806468"
 }
 
 variable "worker_type" {
@@ -196,7 +196,7 @@ variable "service_account_scopes" {
 }
 
 variable "catalogs" {
-  description = "Presto catalogs"
+  description = "Trino catalogs"
   type        = list(object({
     file_name = string
     content   = string

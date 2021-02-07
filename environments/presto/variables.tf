@@ -14,5 +14,5 @@ variable "zone" {
 }
 
 variable "environment_name" {
-  default = "benchpresto"
+  default = "benchtrino"
 }

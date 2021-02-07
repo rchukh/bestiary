@@ -1,19 +1,19 @@
 #!/bin/bash
 ##
-# Installs Benchto Service - https://github.com/prestosql/benchto/tree/master/benchto-service
+# Installs Benchto Service - https://github.com/trinodb/benchto/tree/master/benchto-service
 #
 # Mutation required:
 # - base.sh
 ##
 TMP_DIR=/tmp/bestiary/$(uuidgen -t)
 
-SERVICE_VERSION=0.7
+SERVICE_VERSION=0.14
 SERVICE_DIST=benchto-service-$SERVICE_VERSION.jar
 SERVICE_DESTINATION=/opt/benchto/service
 
 # Download and install
 sudo mkdir -p $TMP_DIR
-sudo curl -L -o $TMP_DIR/$SERVICE_DIST http://central.maven.org/maven2/io/prestosql/benchto/benchto-service/$SERVICE_VERSION/$SERVICE_DIST
+sudo curl -L -o $TMP_DIR/$SERVICE_DIST https://repo1.maven.org/maven2/io/trino/benchto/benchto-service/$SERVICE_VERSION/$SERVICE_DIST
 
 sudo mkdir -p $SERVICE_DESTINATION
 sudo mv $TMP_DIR/$SERVICE_DIST $SERVICE_DESTINATION

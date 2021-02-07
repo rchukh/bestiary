@@ -9,8 +9,8 @@ resource "google_project_service" "storage-component" {
   disable_on_destroy         = false
 }
 
-resource "google_compute_http_health_check" "presto" {
-  name    = "presto-${var.environment_name}-hc"
+resource "google_compute_http_health_check" "trino" {
+  name    = "trino-${var.environment_name}-hc"
   project = var.project
 
   check_interval_sec  = "10"
@@ -22,28 +22,28 @@ resource "google_compute_http_health_check" "presto" {
   request_path = "/v1/status"
 }
 
-resource "google_compute_target_pool" "presto" {
-  name = "presto-${var.environment_name}-pool"
+resource "google_compute_target_pool" "trino" {
+  name = "trino-${var.environment_name}-pool"
 
   project          = var.project
   region           = var.region
   session_affinity = "NONE"
-  health_checks    = [google_compute_http_health_check.presto.name]
+  health_checks    = [google_compute_http_health_check.trino.name]
 }
 
-resource "google_compute_forwarding_rule" "presto" {
-  name = (var.coordinator_group_lb_name != "" ? var.coordinator_group_lb_name : "presto-${var.environment_name}-lb")
+resource "google_compute_forwarding_rule" "trino" {
+  name = (var.coordinator_group_lb_name != "" ? var.coordinator_group_lb_name : "trino-${var.environment_name}-lb")
 
   project               = var.project
   region                = var.region
-  target                = google_compute_target_pool.presto.self_link
+  target                = google_compute_target_pool.trino.self_link
   load_balancing_scheme = var.coordinator_group_lb_schema
   port_range            = var.http_port
 }
 
 # TODO: Set source_ranges to internal network in case of Internal LB 
-resource "google_compute_firewall" "presto-lb-fw" {
-  name = "presto-${var.environment_name}-fr-fw"
+resource "google_compute_firewall" "trino-lb-fw" {
+  name = "trino-${var.environment_name}-fr-fw"
 
   project = var.project
   network = var.network
@@ -54,12 +54,12 @@ resource "google_compute_firewall" "presto-lb-fw" {
   }
 
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["allow-presto-${var.environment_name}-coordinator"]
+  target_tags   = ["allow-trino-${var.environment_name}-coordinator"]
 }
 
 # Allow communications between coordinator and workers
-resource "google_compute_firewall" "presto" {
-  name = "presto-${var.environment_name}-communications"
+resource "google_compute_firewall" "trino" {
+  name = "trino-${var.environment_name}-communications"
 
   project = var.project
   network = var.network
@@ -70,12 +70,12 @@ resource "google_compute_firewall" "presto" {
   }
 
   source_ranges = [var.subnetwork_range]
-  target_tags   = ["allow-presto-${var.environment_name}"]
+  target_tags   = ["allow-trino-${var.environment_name}"]
 }
 
 # Allow inside of subnet
-resource "google_compute_firewall" "presto_metrics" {
-  name = "presto-${var.environment_name}-metrics"
+resource "google_compute_firewall" "trino_metrics" {
+  name = "trino-${var.environment_name}-metrics"
 
   project = var.project
   network = var.network
@@ -86,7 +86,7 @@ resource "google_compute_firewall" "presto_metrics" {
   }
 
   source_ranges = [var.subnetwork_range]
-  target_tags   = ["allow-presto-${var.environment_name}-metrics"]
+  target_tags   = ["allow-trino-${var.environment_name}-metrics"]
 }
 
 data "template_file" "additional_hosts" {
@@ -143,7 +143,7 @@ data "archive_file" "coordinator_config" {
 }
 
 resource "google_storage_bucket_object" "coordinator_config" {
-  name   = "presto_${var.environment_name}_${data.archive_file.coordinator_config.output_md5}.zip"
+  name   = "trino_${var.environment_name}_${data.archive_file.coordinator_config.output_md5}.zip"
   bucket = var.gcs_bucket
   source = data.archive_file.coordinator_config.output_path
 }
@@ -155,10 +155,10 @@ module "coordinator_group" {
   # - https://github.com/GoogleCloudPlatform/terraform-google-managed-instance-group/pull/39
   source = "git::https://github.com/rchukh/terraform-google-managed-instance-group.git?ref=terraform_0.12"
 
-  name = (var.coordinator_group_name != "" ? var.coordinator_group_name : "presto-${var.environment_name}-coordinators")
+  name = (var.coordinator_group_name != "" ? var.coordinator_group_name : "trino-${var.environment_name}-coordinators")
 
-  # Coordinator Pool is fixed to 1 (Presto specifics) 
-  # See: https://github.com/prestosql/presto/issues/391 
+  # Coordinator Pool is fixed to 1 (Trino specifics)
+  # See: https://github.com/trinodb/trino/issues/391
   size = 1
 
   project    = var.project
@@ -177,11 +177,11 @@ module "coordinator_group" {
   service_port           = var.http_port
   service_port_name      = "http"
   http_health_check      = false
-  target_pools           = [google_compute_target_pool.presto.self_link]
+  target_pools           = [google_compute_target_pool.trino.self_link]
   target_tags = setunion(
-    google_compute_firewall.presto-lb-fw.target_tags,
-    google_compute_firewall.presto.target_tags,
-    google_compute_firewall.presto_metrics.target_tags
+    google_compute_firewall.trino-lb-fw.target_tags,
+    google_compute_firewall.trino.target_tags,
+    google_compute_firewall.trino_metrics.target_tags
   )
 
   wait_for_instances = true
@@ -192,7 +192,7 @@ data "template_file" "worker_config" {
   template = file(format("%s/templates/worker.config.tpl", path.module))
 
   vars = {
-    COORDINATOR = "http://${google_compute_forwarding_rule.presto.ip_address}:${var.http_port}"
+    COORDINATOR = "http://${google_compute_forwarding_rule.trino.ip_address}:${var.http_port}"
     PORT        = var.http_port
   }
 }
@@ -232,7 +232,7 @@ data "archive_file" "worker_config" {
 }
 
 resource "google_storage_bucket_object" "worker_config" {
-  name   = "presto_${var.environment_name}_${data.archive_file.worker_config.output_md5}.zip"
+  name   = "trino_${var.environment_name}_${data.archive_file.worker_config.output_md5}.zip"
   bucket = var.gcs_bucket
   source = data.archive_file.worker_config.output_path
 }
@@ -244,7 +244,7 @@ module "worker_group" {
   # - https://github.com/GoogleCloudPlatform/terraform-google-managed-instance-group/pull/39
   source = "git::https://github.com/rchukh/terraform-google-managed-instance-group.git?ref=terraform_0.12"
 
-  name = (var.worker_group_name != "" ? var.worker_group_name : "presto-${var.environment_name}-workers")
+  name = (var.worker_group_name != "" ? var.worker_group_name : "trino-${var.environment_name}-workers")
 
   size = var.worker_group_size
 
@@ -266,8 +266,8 @@ module "worker_group" {
   http_health_check      = false
   target_pools           = []
   target_tags = setunion(
-    google_compute_firewall.presto.target_tags,
-    google_compute_firewall.presto_metrics.target_tags
+    google_compute_firewall.trino.target_tags,
+    google_compute_firewall.trino_metrics.target_tags
   )
 
   wait_for_instances = true

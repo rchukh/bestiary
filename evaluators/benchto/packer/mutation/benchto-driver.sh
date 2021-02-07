@@ -1,19 +1,19 @@
 #!/bin/bash
 ##
-# Installs Benchto - https://github.com/prestosql/benchto/tree/master/benchto-driver
+# Installs Benchto - https://github.com/trinodb/benchto/tree/master/benchto-driver
 #
 # Mutation required:
 # - base.sh
 ##
 TMP_DIR=/tmp/bestiary/$(uuidgen -t)
 
-DRIVER_VERSION=0.7
+DRIVER_VERSION=0.14
 DRIVER_DIST=benchto-driver-$DRIVER_VERSION.jar
 DRIVER_DESTINATION=/opt/benchto/driver
 
 # Download and install
 sudo mkdir -p $TMP_DIR
-sudo curl -L -o $TMP_DIR/$DRIVER_DIST http://central.maven.org/maven2/io/prestosql/benchto/benchto-driver/$DRIVER_VERSION/$DRIVER_DIST
+sudo curl -L -o $TMP_DIR/$DRIVER_DIST https://repo1.maven.org/maven2/io/trino/benchto/benchto-driver/$DRIVER_VERSION/$DRIVER_DIST
 
 sudo mkdir -p $DRIVER_DESTINATION
 sudo mv $TMP_DIR/$DRIVER_DIST $DRIVER_DESTINATION
@@ -30,12 +30,11 @@ benchmark-service:
 
 # data-sources section which lists all jdbc drivers which can be used in benchmarks
 data-sources:
-  presto:
-    url: jdbc:presto://_PRESTO_URL_:_PRESTO_PORT_
-    username: _PRESTO_USERNAME_
-    password: _PRESTO_PASSWORD_
-    driver-class-name: com.facebook.presto.jdbc.PrestoDriver
-    # driver-class-name: io.prestosql.jdbc.PrestoDriver
+  trino:
+    url: jdbc:trino://_TRINO_URL_:_TRINO_PORT_
+    username: _TRINO_USERNAME_
+    password: _TRINO_PASSWORD_
+    driver-class-name: io.trino.jdbc.TrinoDriver
 
 # macroExecutions:
 #   # macro executed before all benchmarks
@@ -60,9 +59,9 @@ benchmark:
 EOF
 
 
-# TODO: Prepare Samples https://github.com/prestosql/presto/tree/master/presto-benchto-benchmarks/src/main/resources
+# TODO: Prepare Samples https://github.com/trinodb/trino/tree/master/testing/trino-benchto-benchmarks/src/main/resources
 sudo mkdir -p $DRIVER_DESTINATION/data/sql
-sudo mkdir -p $DRIVER_DESTINATION/data/benchmarks/presto
+sudo mkdir -p $DRIVER_DESTINATION/data/benchmarks/trino
 sudo mkdir -p $DRIVER_DESTINATION/data/overrides
 
 sudo tee $DRIVER_DESTINATION/samplerun.sh <<EOF
@@ -71,7 +70,7 @@ sudo tee $DRIVER_DESTINATION/samplerun.sh <<EOF
 java -Xmx1g -jar $DRIVER_DIST \
     --sql data/sql \
     --benchmarks data/benchmarks \
-    --activeBenchmarks=presto/tpcds,presto/tpch \
+    --activeBenchmarks=trino/tpcds,trino/tpch \
     --profile=bestiary
 
 EOF

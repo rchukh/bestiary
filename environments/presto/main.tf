@@ -19,7 +19,7 @@ locals {
   hms_cloud_sql_name   = format("bestiary-hms-%s", random_id.name.hex)
   hms_config_bucket    = format("bestiary_hms_config_%s", random_id.name.hex)
   hms_warehouse_bucket = format("bestiary_hms_warehouse_%s", random_id.name.hex)
-  presto_config_bucket = format("bestiary_presto_config_%s", random_id.name.hex)
+  trino_config_bucket  = format("bestiary_trino_config_%s", random_id.name.hex)
 }
 
 ##
@@ -140,12 +140,12 @@ module "hms" {
 }
 
 ##
-# Presto
+# trino
 ##
-resource "google_storage_bucket" "presto_config" {
+resource "google_storage_bucket" "trino_config" {
   provider = "google-beta"
   project  = var.project
-  name     = local.presto_config_bucket
+  name     = local.trino_config_bucket
   location = "europe-west1"
 }
 
@@ -158,11 +158,11 @@ data "template_file" "hive_catalog" {
   }
 }
 
-module "presto" {
-  source = "../../executors/presto/terraform/"
+module "trino" {
+  source = "..\/..\/executors\/trino/terraform/"
 
-  coordinator_image = "bestiary-prestosql-1564999725"
-  worker_image      = "bestiary-prestosql-1564999725"
+  coordinator_image = "bestiary-trino-1564999725"
+  worker_image      = "bestiary-trino-1564999725"
 
   project = var.project
   region  = var.region
@@ -176,7 +176,7 @@ module "presto" {
   environment_name  = var.environment_name
   worker_group_size = 1
 
-  gcs_bucket = google_storage_bucket.presto_config.name
+  gcs_bucket = google_storage_bucket.trino_config.name
   catalogs = [
     {
       file_name = "hive.properties"

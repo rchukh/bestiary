@@ -1,15 +1,15 @@
-# Presto Packer configuration
+# Trino Packer configuration
 
 ## Overview
 
-Packer configuration for [PrestoSQL](https://prestosql.io).
+Packer configuration for [Trino](https://Trino.io).
 
 ## Configurations
 
 - [Bestiary Base Linux VM](https://github.com/rchukh/bestiary/tree/master/vm/centos)
-- [Presto 305](https://prestosql.io/docs/current/release/release-305.html)
-- Monit over SysVinit that comes with Presto
-- [Amazon Corretto 1.8](https://aws.amazon.com/corretto/) as JVM
+- [Trino 351](https://trino.io/docs/current/release/release-351.html)
+- Monit over SysVinit that comes with Trino
+- [Amazon Corretto 11](https://aws.amazon.com/corretto/) as JVM
 - Prometheus JMX Exporter (Port 8081)
 
 ## Variables

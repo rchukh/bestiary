@@ -2,7 +2,7 @@
 
 ## Overview
 
-Packer configuration of [Benchto](https://github.com/prestosql/benchto).
+Packer configuration of [Benchto](https://github.com/trinodb/benchto).
 
 ## Configurations
 

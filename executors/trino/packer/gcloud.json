@@ -9,10 +9,10 @@
         "type": "shell",
         "scripts": [
             "../../../vm/centos/mutation/runtimes/java/corretto_11.sh",
-            "mutation/presto.sh",
-            "mutation/presto/jmx_agent.sh",
-            "mutation/presto/monit.sh",
-            "mutation/presto/presto-querylog.sh"
+            "mutation/trino.sh",
+            "mutation/trino/jmx_agent.sh",
+            "mutation/trino/monit.sh",
+            "mutation/trino/trino-querylog.sh"
         ]
       }
     ],
@@ -27,9 +27,9 @@
 
         "source_image_family": "bestiary-linux",
 
-        "image_name" : "bestiary-prestosql-{{timestamp}}",
+        "image_name" : "bestiary-trino-{{timestamp}}",
         "image_family" : "bestiary-executors",
-        "image_description" : "Bestiary PrestoSQL - Build {{timestamp}}"
+        "image_description" : "Bestiary Trino - Build {{timestamp}}"
       }
     ]
   }

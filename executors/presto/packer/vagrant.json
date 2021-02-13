@@ -1,7 +1,17 @@
 {
+  "variables": {
+    "fluentd_host": "127.0.0.1",
+    "fluentd_port": "54321",
+    "fluentd_secret": "secret"
+  },
   "provisioners" : [
     {
       "type": "shell",
+      "environment_vars": [
+        "FLUENTD_HOST={{user `fluentd_host`}}",
+        "FLUENTD_PORT={{user `fluentd_port`}}",
+        "FLUENTD_SECRET={{user `fluentd_secret`}}"
+      ],
       "scripts": [
         "../../../vm/centos/mutation/runtimes/java/corretto_11.sh",
         "mutation/presto.sh",

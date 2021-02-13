@@ -1,0 +1,50 @@
+{
+    "variables": {
+      "gcp_account_file": "{{env `GOOGLE_CLOUD_KEYFILE_JSON`}}",
+      "gcp_project_id": "",
+      "gcp_zone": "europe-west1-d",
+
+      "postgresql_password": "postgres",
+
+      "benchto_db_create": "true",
+      "benchto_db": "benchto",
+      "benchto_db_user": "postgres",
+      "benchto_db_password": "postgres",
+
+      "version": "0.1"
+    },
+    "provisioners": [
+      {
+        "type": "shell",
+        "environment_vars": [
+          "POSTGRESQL_PASSWORD={{user `postgresql_password`}}",
+          "BENCHTO_CREATE_DATABASE={{user `benchto_db_create`}}",
+          "BENCHTO_DB={{user `benchto_db`}}",
+          "BENCHTO_DB_USER={{user `benchto_db_user`}}",
+          "BENCHTO_DB_PASSWORD={{user `benchto_db_password`}}"
+        ],
+        "scripts": [
+            "../../../vm/centos/mutation/runtimes/java/corretto_8.sh",
+            "../../../keepers/timescaledb/packer/mutation/timescaledb.sh",
+            "../../../evaluators/mutation/benchto-service.sh",
+            "../../../evaluators/mutation/benchto-driver.sh"
+        ]
+      }
+    ],
+    "builders": [
+      {
+        "type": "googlecompute",
+        "account_file": "{{user `gcp_account_file`}}",
+        "project_id": "{{user `gcp_project_id`}}",
+        "zone": "{{user `gcp_zone`}}",
+        "use_internal_ip": false,
+        "ssh_username": "packer",
+
+        "source_image_family": "bestiary-linux",
+
+        "image_name" : "bestiary-control-v{{user `version`}}-{{timestamp}}",
+        "image_family" : "bestiary-environments",
+        "image_description" : "Bestiary Control {{user `version`}} - Build {{timestamp}}"
+      }
+    ]
+  }
